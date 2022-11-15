@@ -86,5 +86,13 @@ using namespace SystemPack;
 #endif
 
 
+// C++ Standard library
+#include <vector>
+#include <array>
+#include <optional>
+#include <variant>
+#include <tuple>
+#include <type_traits>
+
 
 #endif // __UNION_AFX_H__

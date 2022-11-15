@@ -4,38 +4,42 @@
 namespace GOTHIC_ENGINE {
 
 
-	void zCDSDevice::InitDevice()
+void DSDevice::init()
+{
+	deviceCount = JslConnectDevices();
+}
+
+//bool DSDevice::checkConnection() const
+//{
+//	// FIXME: the following code doesn't work.
+//	// It is equivalent to returning the same value we previously obtained
+//	// from the JslConnectDevices() function.
+//	// See: https://github.com/JibbSmart/JoyShockLibrary/blob/master/JoyShockLibrary/JoyShockLibrary.cpp#L336
+//	// 
+//	// constexpr auto MAX_JOYSTICKS = 16;
+//	// std::array<int, MAX_JOYSTICKS> devices;
+//	// return JslGetConnectedDeviceHandles(devices.data(), DeviceCount) > 0;
+//
+//	return deviceCount > 0;
+//}
+
+void DSDevice::update()
+{
+	constexpr auto StickScale = 32767.f;
+	constexpr auto TriggerScale = 255.f;
+
+	gamepadState = JslGetSimpleState(0);
+	if (connected)
 	{
-		DeviceCount = JslConnectDevices();
+		keyStates		= gamepadState.buttons;
+		
+		leftStick.X		= int(gamepadState.stickLX * StickScale);
+		leftStick.Y		= int(gamepadState.stickLY * StickScale);
+		rightStick.X	= int(gamepadState.stickRX * StickScale);
+		rightStick.Y	= int(gamepadState.stickRY * StickScale);
+		leftTrigger		= gamepadState.lTrigger * StickScale;
+		rightTrigger	= gamepadState.rTrigger * StickScale;
 	}
+}
 
-	bool zCDSDevice::CheckConnection()
-	{
-		bool result = true;
-		int* devices = new int[DeviceCount];
-
-		JslGetConnectedDeviceHandles(devices, DeviceCount);
-
-		if (devices == 0)
-			result = false;
-
-		delete[] devices;
-		return result;
-	}
-
-	void zCDSDevice::UpdateState()
-	{
-		GamepadState = JslGetSimpleState(0);
-		if (DeviceConnected)
-		{
-			KeyStates = GamepadState.buttons;
-
-      LeftStick.X  = (int)(GamepadState.stickLX  * 32767.0f);
-      LeftStick.Y  = (int)(GamepadState.stickLY  * 32767.0f);
-      RightStick.X = (int)(GamepadState.stickRX  * 32767.0f);
-      RightStick.Y = (int)(GamepadState.stickRY  * 32767.0f);
-      LeftTrigger  = GamepadState.lTrigger * 255.0f;
-      RightTrigger = GamepadState.rTrigger * 255.0f;
-		}
-	}
 }

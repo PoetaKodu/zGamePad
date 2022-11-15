@@ -123,7 +123,7 @@ namespace GOTHIC_ENGINE {
   struct zTStickState {
     int X;
     int Y;
-    int Length() {
+    int Length() const {
       return (int)sqrt( double(X * X + Y * Y) );
     }
   };

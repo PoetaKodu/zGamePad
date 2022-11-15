@@ -404,8 +404,8 @@ namespace GOTHIC_ENGINE {
     // Maximum of Triggers or Sticks - 65536
     if (!DeviceConnected)
     {
-        LeftStick.X = DS4Device.GetLeftStick().X;
-        LeftStick.Y = DS4Device.GetLeftStick().Y;
+        LeftStick.X = DS4Device.getLeftStick().X;
+        LeftStick.Y = DS4Device.getLeftStick().Y;
     }
     else
     {
@@ -459,8 +459,8 @@ namespace GOTHIC_ENGINE {
 
     if (!DeviceConnected)
     {
-        LeftTrigger = (int)DS4Device.GetLeftTrigger();
-        RightTrigger = (int)DS4Device.GetRightTrigger();
+        LeftTrigger = (int)DS4Device.getLeftTrigger();
+        RightTrigger = (int)DS4Device.getRightTrigger();
     }
     else
     {
@@ -499,8 +499,8 @@ namespace GOTHIC_ENGINE {
     int invY = Opt_InvertY ? -1 : 1;
 
     if( !DeviceConnected ) {
-      leftStick  = (diveMode ? DS4Device.GetLeftStick().X : DS4Device.GetRightStick().X);
-      rightStick = (diveMode ? DS4Device.GetLeftStick().Y : DS4Device.GetRightStick().Y * invY);
+      leftStick  = (diveMode ? DS4Device.getLeftStick().X : DS4Device.getRightStick().X);
+      rightStick = (diveMode ? DS4Device.getLeftStick().Y : DS4Device.getRightStick().Y * invY);
     }
     else {
       leftStick  = (diveMode ? Gamepad.Gamepad.sThumbLX : Gamepad.Gamepad.sThumbRX);
@@ -559,22 +559,22 @@ namespace GOTHIC_ENGINE {
     if( !zinput )
       return;
 
-    bool DSInputDisconnected = !DS4Device.CheckConnection();
+    bool DSInputDisconnected = !DS4Device.checkConnection();
     bool XInputDisconnected = XINPUTGETSTATE(Opt_ControllerID, &Gamepad) == ERROR_DEVICE_NOT_CONNECTED;
 
     DeviceConnected = !XInputDisconnected;
-    DS4Device.SetConnected(!DSInputDisconnected);
+    DS4Device.connected = !DSInputDisconnected;
 
     if(XInputDisconnected && DSInputDisconnected) {
-      if (DeviceConnected || DS4Device.IsConnected()) {
+      if (DeviceConnected || DS4Device.connected) {
             DisplayDisconnect();
       }
       return;
     }
     
     if (!DeviceConnected) {
-        DS4Device.UpdateState();
-        KeyStates = DS4Device.GetKeyState();
+        DS4Device.update();
+        KeyStates = DS4Device.getKeyState();
     }
     else {
         KeyStates = Gamepad.Gamepad.wButtons;
@@ -646,7 +646,7 @@ namespace GOTHIC_ENGINE {
   void zCXInputDevice::UpdateLastKeyState() {
       if (!DeviceConnected)
       {
-          WORD DSKeyState = DS4Device.GetKeyState();
+          WORD DSKeyState = DS4Device.getKeyState();
           for (uint i = 0; i < KeyCombinations.GetNum(); i++)
               KeyCombinations[i].KeyStates = DSKeyState;
       }

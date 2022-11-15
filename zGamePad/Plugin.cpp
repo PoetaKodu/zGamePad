@@ -3,7 +3,7 @@
 
 namespace GOTHIC_ENGINE {
   void Game_Entry() {
-    DS4Device.InitDevice();
+    DS4Device.init();
   }
 
 

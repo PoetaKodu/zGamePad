@@ -186,7 +186,7 @@ namespace GOTHIC_ENGINE {
 
   void zCGamepadQuickBar::GetSelectedCellID( uint& ringID, uint& cellID ) {
     static float stickCircleMax = 25000.0f;
-    if (DS4Device.IsConnected()) {
+    if (DS4Device.connected) {
         stickCircleMax = 21000; 
     }
 

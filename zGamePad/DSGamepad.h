@@ -3,35 +3,44 @@
 
 namespace GOTHIC_ENGINE {
 
-    class zCDSDevice {
+class DSDevice {
 
-        JOY_SHOCK_STATE GamepadState;
-        WORD KeyStates;
-        zTStickState LeftStick;
-        zTStickState RightStick;
-        float LeftTrigger;
-        float RightTrigger;
-        bool DeviceConnected;
+	JOY_SHOCK_STATE		gamepadState;
+	WORD				keyStates;
+	zTStickState		leftStick;
+	zTStickState		rightStick;
+	float				leftTrigger;
+	float				rightTrigger;
+	int					deviceCount;
 
-        int DeviceCount;
+public:
+	bool				connected;
 
-    public:
 
-        void InitDevice();
-        void UpdateState();
+	void init();
+	void update();
 
-        WORD GetKeyState() { return KeyStates; }
-        zTStickState GetLeftStick() { return LeftStick; }
-        zTStickState GetRightStick() { return RightStick; }
-        float GetLeftTrigger() { return LeftTrigger; }
-        float GetRightTrigger() { return RightTrigger; }
-        bool CheckConnection();
+	auto getKeyState() const -> WORD {
+		return keyStates;
+	}
+	auto getLeftStick() const -> zTStickState {
+		return leftStick;
+	}
+	auto getRightStick() const -> zTStickState {
+		return rightStick;
+	}
+	auto getLeftTrigger() const -> float {
+		return leftTrigger;
+	}
+	auto getRightTrigger() const -> float {
+		return rightTrigger;
+	}
+	auto checkConnection() const -> bool {
+		// NOTE: See .cpp file for complete description.
+		return deviceCount > 0;
+	}
+};
 
-        bool IsConnected() { return DeviceConnected; }
-        void SetConnected(bool arg) { DeviceConnected = arg; }
-
-    };
-
-    zCDSDevice DS4Device;
+auto DS4Device = DSDevice();
 
 }
