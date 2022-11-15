@@ -348,3 +348,5 @@ healthchecksdb
 *.txt
 /zGamePad/G2A Release
 *.7z
+
+.vscode/
