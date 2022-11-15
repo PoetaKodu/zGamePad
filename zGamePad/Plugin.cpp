@@ -36,7 +36,7 @@ namespace GOTHIC_ENGINE {
   void Game_Loop() {
     if( keybuffer.GetNum() ) {
       bool isGpInput = xinputDevice.hasGamepadInput();
-      XInputDevice::VibrationIsEnabled = isGpInput;
+      XInputDevice::vibrationIsEnabled = isGpInput;
 #if ENGINE >= Engine_G2
       if( !s_bUseOldControls_Real )
         oCGame::s_bUseOldControls = isGpInput;

@@ -32,8 +32,8 @@ namespace GOTHIC_ENGINE {
 
     THISCALL( Hook_GetMousePos )(x, y, z);
     float motionFactor = Opt_NoDxMode ? ztimer->frameTimeFloat : 1.0f;
-    x += ((float)xinputDevice.RightStick.x) /  3000.0f * (Opt_StickSensitivity * motionFactor);
-    y += ((float)xinputDevice.RightStick.y) / -3000.0f * (Opt_StickSensitivity * motionFactor);
+    x += ((float)xinputDevice.rightStick.x) /  3000.0f * (Opt_StickSensitivity * motionFactor);
+    y += ((float)xinputDevice.rightStick.y) / -3000.0f * (Opt_StickSensitivity * motionFactor);
 
     if( rollbackSensitivity < 1.0f ) {
       if( abs( x + y ) > 0.3f ) {

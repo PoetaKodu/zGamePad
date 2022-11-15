@@ -8,14 +8,15 @@ namespace GOTHIC_ENGINE {
 #define DEADZONE_L  15000.0f
 #define DEADZONE_R  10000.0f
 
-struct zTGamepadControlInfo {
-	string FileName;
-	string StyleName;
-	bool operator == (const string& fileName) const;
+struct GamepadControlInfo {
+	string fileName;
+	string styleName;
+	auto operator==(const string& fileName) const -> bool;
 
-	static void CreateGamepadControlsList();
-	static Array<zTGamepadControlInfo> GamepadControlsList;
-	static void RegisterStyleInfo(const string& fileName, const string& styleName);
+	static auto createList() -> void;
+	static auto registerStyleInfo(const string& fileName, const string& styleName) -> void;
+
+	static Array<GamepadControlInfo> controlsList;
 };
 
 typedef bool(*LPCONDFUNC)();
@@ -23,51 +24,52 @@ typedef int JOYKEY, DXKEY;
 struct zTCombination_Help;
 
 
-struct zTCombination {
-	string              Id;
-	Array<JOYKEY>       Combination;
-	Array<DXKEY>        Emulation;
-	Array<bool (*)()>   AllowConditions;
-	Array<DXKEY>        AllowButtons;
-	Array<DXKEY>        AllowCombinations;
-	Array<bool(*)()>   DenyConditions;
-	Array<DXKEY>        DenyButtons;
-	Array<DXKEY>        DenyCombinations;
-	bool                Enabled;
-	bool                ToggleMode;
-	bool                Toggled;
-	JOYKEY              KeyStates;
-	zTCombination_Help* Help;
+struct Combination {
+	string				id;
+	Array<JOYKEY>		combination;
+	Array<DXKEY>		emulation;
+	Array<bool (*)()>	allowConditions;
+	Array<DXKEY>		allowButtons;
+	Array<DXKEY>		allowCombinations;
+	Array<bool(*)()>	denyConditions;
+	Array<DXKEY>		denyButtons;
+	Array<DXKEY>		denyCombinations;
+	bool				enabled;
+	bool				toggleMode;
+	bool				toggled;
+	JOYKEY				keyStates;
+	zTCombination_Help*	help;
 
-	zTCombination();
-	bool operator == (const zTCombination& other) const;
-	bool operator <  (const zTCombination& other) const;
-	bool operator >  (const zTCombination& other) const;
-	~zTCombination();
+	Combination();
+	bool operator == (const Combination& other) const;
+	bool operator <  (const Combination& other) const;
+	bool operator >  (const Combination& other) const;
+	~Combination();
 
-	void CheckDisable(JOYKEY& keys);
-	void Disable();
-	bool CheckEnable(JOYKEY& keys);
+	void enable();
+	void disable();
+	bool detectEnable(JOYKEY& keys);
+	void detectDisable(JOYKEY keys);
+
 	bool hasKeysToggled();
-	bool CheckAllConditions();
-	bool CheckKeyStateConditions();
-	void Enable();
-	void SetHelpEnable(bool enable);
-	void AddCombination(JOYKEY keys ...);
-	void AddEmulation(DXKEY keys ...);
-	void AddAllowFunctions(LPCONDFUNC conditions ...);
-	void AddAllowButtons(DXKEY keys ...);
-	void AddAllowCombinations(JOYKEY keys ...);
-	void AddDenyFunctions(LPCONDFUNC conditions ...);
-	void AddDenyButtons(DXKEY keys ...);
-	void AddDenyCombinations(JOYKEY keys ...);
-	void SetEmulationState(bool_t state);
-	void Clear();
+	bool checkAllConditions();
+	bool checkKeyStateConditions();
+	void setHelpEnabled(bool enable);
+	void addCombination(JOYKEY keys, ...);
+	void addEmulation(DXKEY keys, ...);
+	void addAllowFunctions(LPCONDFUNC conditions, ...);
+	void addAllowButtons(DXKEY keys, ...);
+	void addAllowCombinations(JOYKEY keys, ...);
+	void addDenyFunctions(LPCONDFUNC conditions, ...);
+	void addDenyButtons(DXKEY keys, ...);
+	void addDenyCombinations(JOYKEY keys, ...);
+	void setEmulationState(bool_t state);
+	void clear();
 };
 
 
 
-struct zTVibrationMessage {
+struct VibrationMessage {
 	Timer  Timer;
 	uint   Index;
 	string Pattern;
@@ -134,47 +136,52 @@ struct StickState {
 class XInputDevice {
 	friend class zCInput_Win32;
 	friend class zCGamepadSpellBook;
-	friend class zTGamepadControlInfo;
+	friend class GamepadControlInfo;
 
-	string FileName;
-	JOYKEY KeyStatesReal;
-	JOYKEY KeyStates;
-	StickState LeftStick;
-	StickState RightStick;
-	int LeftTrigger;
-	int RightTrigger;
-	bool DeviceConnected;
-	bool StrafePressed;
-	bool WalkBack;
+	string					fileName;
+	JOYKEY					keyStatesReal;
+	JOYKEY					keyStates;
+	StickState				leftStick;
+	StickState				rightStick;
+	int						leftTrigger;
+	int						rightTrigger;
+	bool					deviceConnected;
+	bool					strafePressed;
+	bool					walkBack;
+	Array<Combination>		keyCombinations;
+	VibrationMessage		vibrationMessage;
 
-	void InitCombinations();
-	void UpdateVibration();
-	void UpdateLeftSticksState();
-	void UpdateRightSticksState();
-	void UpdateSticksState();
-	void UpdateKeyState();
-	void UpdateLastKeyState();
-	bool ForceVideoSkipping();
-	bool ParseControlFile(const string& fileName);
-	bool ParseControlFileStrings(const string& fileName);
-	void ParseControlsId(zTCombination& combination, string row);
-	void ParseControlsCombination(zTCombination& combination, string row);
-	void ParseControlsEmulation(zTCombination& combination, string row);
-	void ParseControlsEndRecord(zTCombination& combination);
-	void ParseControlsCondition(zTCombination& combination, string row);
-	void ParseControlsHelp(zTCombination& combination, string row);
-	void ParseControlsStringName(string& stringName, string row);
-	void ParseControlsStyleName(const string& fileName, string row);
-	static void ParseControlsStringText(string& stringName, string row);
-	void DisplayDisconnect();
-	Array<zTCombination> KeyCombinations;
-	zTVibrationMessage VibrationMessage;
+	auto initCombinations() -> void;
+	auto updateVibration() -> void;
+	auto updateLeftSticksState() -> void;
+	auto updateRightSticksState() -> void;
+	auto updateSticksState() -> void;
+	auto updateKeyState() -> void;
+	auto updateLastKeyState() -> void;
+	auto forceVideoSkipping() -> bool;
+	auto parseControlFile(string const& fileName) -> bool;
+	auto parseControlFileStrings(string const& fileName) -> bool;
+	auto parseControlsId(Combination& combination, string row) -> void;
+	auto parseControlsCombination(Combination& combination, string row) -> void;
+	auto parseControlsEmulation(Combination& combination, string row) -> void;
+	auto parseControlsEndRecord(Combination& combination) -> void;
+	auto parseControlsCondition(Combination& combination, string row) -> void;
+	auto parseControlsHelp(Combination& combination, string row) -> void;
+	auto parseControlsStringName(string& stringName, string row) -> void;
+	auto parseControlsStyleName(string const& fileName, string row) -> void;
+	static auto parseControlsStringText(string& stringName, string row) -> void;
+
+	void displayDisconnect();
+
+	
 public:
 
-	XINPUT_STATE Gamepad;
-	PXINPUT_CAPABILITIES Capabilities;
-	XINPUT_VIBRATION Vibration;
-	static bool VibrationIsEnabled;
+	XINPUT_STATE			xinputState;
+	PXINPUT_CAPABILITIES	capabilities;
+	XINPUT_VIBRATION		vibration;
+	static bool				vibrationIsEnabled;
+
+	~XInputDevice();
 
 	auto init() -> void;
 	auto updateControls() -> void;
@@ -190,7 +197,6 @@ public:
 	auto getStickStatesSquare(StickState& stateLeft, StickState& stateRight) -> void;
 	auto getStickStatesCircle(StickState& stateLeft, StickState& stateRight) -> void;
 	auto hasGamepadInput() const -> bool;
-	~XInputDevice();
 };
 
 auto xinputDevice = XInputDevice();
@@ -239,12 +245,12 @@ bool Cond_ConsoleIsOpen();
 
 
 
-#define KEYRECORD_BEGIN { zTCombination _comb;
-#define COMBINATION                     _comb.AddCombination(
-#define EMULATION                 , 0); _comb.AddEmulation(
-#define ALLOWCONDITION            , 0); _comb.AddAllowFunctions(
-#define DENYCONDITION             , 0); _comb.AddDenyFunctions(
-#define KEYRECORD_END             , 0); KeyCombinations.InsertSorted( _comb ); }
+#define KEYRECORD_BEGIN { Combination _comb;
+#define COMBINATION                     _comb.addCombination(
+#define EMULATION                 , 0); _comb.addEmulation(
+#define ALLOWCONDITION            , 0); _comb.addAllowFunctions(
+#define DENYCONDITION             , 0); _comb.addDenyFunctions(
+#define KEYRECORD_END             , 0); keyCombinations.InsertSorted( _comb ); }
 
 
 

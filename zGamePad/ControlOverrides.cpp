@@ -42,10 +42,10 @@ namespace GOTHIC_ENGINE {
   static bool ControlFilesFound = InitializeControlsFileArrays( Controls, Overlays );
 
 
-  bool XInputDevice::VibrationIsEnabled = true;
+  bool XInputDevice::vibrationIsEnabled = true;
 
 
-  void XInputDevice::InitCombinations() {
+  void XInputDevice::initCombinations() {
     if( !ControlFilesFound ) {
       cmd << "No controls files . . ." << endl;
       return;
@@ -54,12 +54,12 @@ namespace GOTHIC_ENGINE {
     if( Opt_ControlsFile.IsEmpty() )
       Opt_ControlsFile = "Controls.Gamepad";
 
-    if( !ParseControlFile( Opt_ControlsFile ) ) {
+    if( !parseControlFile( Opt_ControlsFile ) ) {
       cmd << "No controls files . . ." << endl;
       return;
     }
 
     for( uint i = 0; i < Overlays.GetNum(); i++ )
-      ParseControlFile( Overlays[i] );
+      parseControlFile( Overlays[i] );
   }
 }

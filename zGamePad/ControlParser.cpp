@@ -2,465 +2,467 @@
 // Union SOURCE file
 
 namespace GOTHIC_ENGINE {
-  Array<zTGamepadControlInfo> zTGamepadControlInfo::GamepadControlsList;
+Array<GamepadControlInfo> GamepadControlInfo::controlsList;
 
-  void zTGamepadControlInfo::CreateGamepadControlsList() {
-    Array<string> namesList;
+void GamepadControlInfo::createList() {
+	Array<string> namesList;
 
-    // Find physical control list
-    char** fileTable = Null;
-    long count = vdf_filelist_physical( fileTable );
-    for( long i = 0; i < count; i++ ) {
-      string fileName = fileTable[i];
-      if( fileName.EndWith( ".GAMEPAD" ) )
-        namesList |= fileName.GetWord( "\\" );
-    }
+	// Find physical control list
+	char** fileTable = Null;
+	long count = vdf_filelist_physical(fileTable);
+	for (long i = 0; i < count; i++) {
+		string fileName = fileTable[i];
+		if (fileName.EndWith(".GAMEPAD"))
+			namesList |= fileName.GetWord("\\");
+	}
 
-    delete[] fileTable;
+	delete[] fileTable;
 
-    // Find virtual control list
-    count = vdf_filelist_physical( fileTable );
-    for( long i = 0; i < count; i++ ) {
-      string fileName = fileTable[i];
-      if( fileName.EndWith( ".GAMEPAD" ) )
-        namesList |= fileName.GetWord( "\\" );
-    }
+	// Find virtual control list
+	count = vdf_filelist_physical(fileTable);
+	for (long i = 0; i < count; i++) {
+		string fileName = fileTable[i];
+		if (fileName.EndWith(".GAMEPAD"))
+			namesList |= fileName.GetWord("\\");
+	}
 
-    delete[] fileTable;
+	delete[] fileTable;
 
-    for( uint i = 0; i < namesList.GetNum(); i++ ) {
-        xinputDevice.ParseControlFileStrings( namesList[i] );
-    }
-    // for( string fileName : namesList )
-    // xinputDevice.ParseControlFileStrings( fileName );
-  }
+	for (uint i = 0; i < namesList.GetNum(); i++) {
+		xinputDevice.parseControlFileStrings(namesList[i]);
+	}
+	// for( string fileName : namesList )
+	// xinputDevice.parseControlFileStrings( fileName );
+}
 
-  void zTGamepadControlInfo::RegisterStyleInfo( const string& fileName, const string& styleName ) {
-    uint index = GamepadControlsList.SearchEqual( fileName );
-    if( index == Invalid ) {
-      zTGamepadControlInfo& info = GamepadControlsList.Create();
-      info.FileName = fileName;
-      info.StyleName = styleName;
-    }
-  }
+void GamepadControlInfo::registerStyleInfo(const string& fileName, const string& styleName) {
+	uint index = controlsList.SearchEqual(fileName);
+	if (index == Invalid) {
+		GamepadControlInfo& info = controlsList.Create();
+		info.fileName = fileName;
+		info.styleName = styleName;
+	}
+}
 
-  bool zTGamepadControlInfo::operator == ( const string& fileName ) const {
-    return FileName == fileName;
-  }
+bool GamepadControlInfo::operator == (const string& fileName) const {
+	return this->fileName == fileName;
+}
 
 
 
 
 
-  Array<zTHelpString> zTHelpString::HelpStrings;
+Array<zTHelpString> zTHelpString::HelpStrings;
 
-  zTHelpString::zTHelpString() {
-    // pass
-  }
+zTHelpString::zTHelpString() {
+	// pass
+}
 
 
 
-  inline TSystemLangID GetLangID( const string& lang ) {
-    if( lang == "RUS" ) return Lang_Rus;
-    if( lang == "ENG" ) return Lang_Eng;
-    if( lang == "GER" ) return Lang_Ger;
-    if( lang == "DEU" ) return Lang_Ger;
-    if( lang == "POL" ) return Lang_Pol;
-    if( lang == "ROU" ) return Lang_Rou;
-    if( lang == "ITA" ) return Lang_Ita;
-    if( lang == "CZE" ) return Lang_Cze;
-    if( lang == "ESP" ) return Lang_Esp;
-    return Lang_Eng;
-  }
+inline TSystemLangID GetLangID(const string& lang) {
+	if (lang == "RUS") return Lang_Rus;
+	if (lang == "ENG") return Lang_Eng;
+	if (lang == "GER") return Lang_Ger;
+	if (lang == "DEU") return Lang_Ger;
+	if (lang == "POL") return Lang_Pol;
+	if (lang == "ROU") return Lang_Rou;
+	if (lang == "ITA") return Lang_Ita;
+	if (lang == "CZE") return Lang_Cze;
+	if (lang == "ESP") return Lang_Esp;
+	return Lang_Eng;
+}
 
 
 
-  void zTHelpString::SetText( const string& text, const string& lang ) {
-    TSystemLangID langID = GetLangID( lang );
+void zTHelpString::SetText(const string& text, const string& lang) {
+	TSystemLangID langID = GetLangID(lang);
 
-    for( uint i = 0; i < Items.GetNum(); i++ ) {
-      if( Items[i].LangID == langID ) {
-        Items[i].Text = text;
-        return;
-      }
-    }
+	for (uint i = 0; i < Items.GetNum(); i++) {
+		if (Items[i].LangID == langID) {
+			Items[i].Text = text;
+			return;
+		}
+	}
 
-    auto& item  = Items.Create();
-    item.LangID = langID;
-    item.Text   = text;
-  }
+	auto& item = Items.Create();
+	item.LangID = langID;
+	item.Text = text;
+}
 
 
 
-  string zTHelpString::GetText() {
-    TSystemLangID currentLandID = Union.GetSystemLanguage();
-    TSystemLangID alterLandID   = Lang_Eng;
+string zTHelpString::GetText() {
+	TSystemLangID currentLandID = Union.GetSystemLanguage();
+	TSystemLangID alterLandID = Lang_Eng;
 
-    for( uint i = 0; i < Items.GetNum(); i++ )
-      if( Items[i].LangID == currentLandID )
-        return Items[i].Text;
-    
-    for( uint i = 0; i < Items.GetNum(); i++ )
-      if( Items[i].LangID == alterLandID )
-        return Items[i].Text;
+	for (uint i = 0; i < Items.GetNum(); i++)
+		if (Items[i].LangID == currentLandID)
+			return Items[i].Text;
 
-    if( Items.GetNum() > 0 )
-      return Items.GetFirst().Text;
+	for (uint i = 0; i < Items.GetNum(); i++)
+		if (Items[i].LangID == alterLandID)
+			return Items[i].Text;
 
-    return "";
-  }
+	if (Items.GetNum() > 0)
+		return Items.GetFirst().Text;
 
+	return "";
+}
 
 
-  void zTHelpString::CreateString( const string& name, const string& text, const string& lang ) {
-    for( uint i = 0; i < HelpStrings.GetNum(); i++ ) {
-      zTHelpString& help = HelpStrings[i];
-      if( help.Name == name ) {
-        help.SetText( text, lang );
-        return;
-      }
-    }
 
-    zTHelpString& help = HelpStrings.Create();
-    help.Name = name;
-    help.SetText( text, lang );
-  }
+void zTHelpString::CreateString(const string& name, const string& text, const string& lang) {
+	for (uint i = 0; i < HelpStrings.GetNum(); i++) {
+		zTHelpString& help = HelpStrings[i];
+		if (help.Name == name) {
+			help.SetText(text, lang);
+			return;
+		}
+	}
 
+	zTHelpString& help = HelpStrings.Create();
+	help.Name = name;
+	help.SetText(text, lang);
+}
 
 
-  string zTHelpString::GetString( const string& name ) {
-    for( uint i = 0; i < HelpStrings.GetNum(); i++ )
-      if( HelpStrings[i].Name == name )
-        return HelpStrings[i].GetText();
-    
-    return "???";
-  }
 
+string zTHelpString::GetString(const string& name) {
+	for (uint i = 0; i < HelpStrings.GetNum(); i++)
+		if (HelpStrings[i].Name == name)
+			return HelpStrings[i].GetText();
 
+	return "???";
+}
 
-  static string CurrentControlsNamespace = "";
-  static uint   CurrentCimbinationLine   = 0;
-  static uint   CurrentControlsLine      = 0;
 
-  void XInputDevice::ParseControlsId( zTCombination& combination, string row ) {
-    string id = row.GetWordSmart( 2 );
-    combination.Id = string::Combine( "%s.%s", CurrentControlsNamespace, id );
-    for( uint i = 0; i < KeyCombinations.GetNum(); i++ )
-      if( combination.Id == KeyCombinations[i].Id )
-        Message::Fatal( string::Combine( "Key '%s' already defined in '%s' file.", id, CurrentControlsNamespace ));
-  }
 
+static string CurrentControlsNamespace = "";
+static uint   CurrentCimbinationLine = 0;
+static uint   CurrentControlsLine = 0;
 
+void XInputDevice::parseControlsId(Combination& combination, string row) {
+	string id = row.GetWordSmart(2);
+	combination.id = string::Combine("%s.%s", CurrentControlsNamespace, id);
+	for (uint i = 0; i < keyCombinations.GetNum(); i++)
+		if (combination.id == keyCombinations[i].id)
+			Message::Fatal(string::Combine("Key '%s' already defined in '%s' file.", id, CurrentControlsNamespace));
+}
 
-  void XInputDevice::ParseControlsCombination( zTCombination& combination, string row ) {
-    for( uint i = 2; true; i++ ) {
-      string token = row.GetWordSmart( i );
-      if( token.IsEmpty() )
-        break;
 
-      // Token-separator
-      if( token == "," )
-        continue;
 
-      int code = GetCombinationKeyCode( token );
-      if( code == None )
-        Message::Fatal( "Unknown control combination: " + token );
-     
-      combination.AddCombination( code, 0 );
-    }
-  }
+void XInputDevice::parseControlsCombination(Combination& combination, string row) {
+	for (uint i = 2; true; i++) {
+		string token = row.GetWordSmart(i);
+		if (token.IsEmpty())
+			break;
 
+		// Token-separator
+		if (token == ",")
+			continue;
 
+		int code = GetCombinationKeyCode(token);
+		if (code == None)
+			Message::Fatal("Unknown control combination: " + token);
 
-  void XInputDevice::ParseControlsEmulation( zTCombination& combination, string row ) {
-    for( uint i = 2; true; i++ ) {
-      string token = row.GetWordSmart( i );
-      if( token.IsEmpty() )
-        break;
+		combination.addCombination(code, 0);
+	}
+}
 
-      // Token-separator
-      if( token == "," )
-        continue;
 
-      int code = GetEmulationKeyCode( token );
-      if( code == None )
-        Message::Fatal( "Unknown control emulation: " + token );
 
-      combination.AddEmulation( code, 0 );
-    }
-  }
+void XInputDevice::parseControlsEmulation(Combination& combination, string row) {
+	for (uint i = 2; true; i++) {
+		string token = row.GetWordSmart(i);
+		if (token.IsEmpty())
+			break;
 
+		// Token-separator
+		if (token == ",")
+			continue;
 
+		int code = GetEmulationKeyCode(token);
+		if (code == None)
+			Message::Fatal("Unknown control emulation: " + token);
 
-  void XInputDevice::ParseControlsEndRecord( zTCombination& combination ) {
-    if( combination.Id.IsEmpty() )
-      cmd << Col16( CMD_RED | CMD_INT ) << string::Combine( "Found unnamed combination in '%s' file.\nLine:%i", CurrentControlsNamespace, CurrentCimbinationLine ) << Col16() << endl;
-      // Message::Fatal( string::Combine( "Found unnamed combination in '%s' file.\nLine:%i", CurrentControlsNamespace, CurrentCimbinationLine ) );
+		combination.addEmulation(code, 0);
+	}
+}
 
-    KeyCombinations.InsertSorted( combination );
-  }
 
 
+void XInputDevice::parseControlsEndRecord(Combination& combination) {
+	if (combination.id.IsEmpty())
+		cmd << Col16(CMD_RED | CMD_INT) << string::Combine("Found unnamed combination in '%s' file.\nLine:%i", CurrentControlsNamespace, CurrentCimbinationLine) << Col16() << endl;
+	// Message::Fatal( string::Combine( "Found unnamed combination in '%s' file.\nLine:%i", CurrentControlsNamespace, CurrentCimbinationLine ) );
 
-  void XInputDevice::ParseControlsCondition( zTCombination& combination, string row ) {
-    bool isNot = false;
-    for( uint i = 2; true; i++ ) {
-      string token = row.GetWordSmart( i );
-      if( token.IsEmpty() )
-        break;
+	keyCombinations.InsertSorted(combination);
+}
 
-      // Is 'NOT' function ??
-      if( token == "!" ) {
-        isNot = !isNot;
-        continue;
-      }
 
-      // Token-separator
-      if( token == "," )
-        continue;
 
-      // Condition by function
-      LPCONDFUNC func = GetConditionFunction( token );
-      if( func != Null ) {
-        if( isNot ) {
-          combination.AddDenyFunctions( func, 0 );
-          isNot = false;
-        }
-        else
-          combination.AddAllowFunctions( func, 0 );
+void XInputDevice::parseControlsCondition(Combination& combination, string row) {
+	bool isNot = false;
+	for (uint i = 2; true; i++) {
+		string token = row.GetWordSmart(i);
+		if (token.IsEmpty())
+			break;
 
-        continue;
-      }
+		// Is 'NOT' function ??
+		if (token == "!") {
+			isNot = !isNot;
+			continue;
+		}
 
-      // Condition by keyboard key
-      DXKEY dxKey = GetEmulationKeyCode( token );
-      if( dxKey != None ) {
-        if( isNot ) {
-          combination.AddDenyButtons( dxKey, 0 );
-          isNot = false;
-        }
-        else
-          combination.AddAllowButtons( dxKey, 0 );
+		// Token-separator
+		if (token == ",")
+			continue;
 
-        continue;
-      }
+		// Condition by function
+		LPCONDFUNC func = GetConditionFunction(token);
+		if (func != Null) {
+			if (isNot) {
+				combination.addDenyFunctions(func, 0);
+				isNot = false;
+			}
+			else
+				combination.addAllowFunctions(func, 0);
 
-      // Condition by gamepad key
-      JOYKEY joyKey = GetCombinationKeyCode( token );
-      if( joyKey != None ) {
-        if( isNot ) {
-          combination.AddDenyCombinations( joyKey, 0 );
-          isNot = false;
-        }
-        else
-          combination.AddAllowCombinations( joyKey, 0 );
+			continue;
+		}
 
-        continue;
-      }
+		// Condition by keyboard key
+		DXKEY dxKey = GetEmulationKeyCode(token);
+		if (dxKey != None) {
+			if (isNot) {
+				combination.addDenyButtons(dxKey, 0);
+				isNot = false;
+			}
+			else
+				combination.addAllowButtons(dxKey, 0);
 
-      Message::Fatal( "Unknown control condition: " + token );
-    }
-  }
+			continue;
+		}
 
+		// Condition by gamepad key
+		JOYKEY joyKey = GetCombinationKeyCode(token);
+		if (joyKey != None) {
+			if (isNot) {
+				combination.addDenyCombinations(joyKey, 0);
+				isNot = false;
+			}
+			else
+				combination.addAllowCombinations(joyKey, 0);
 
+			continue;
+		}
 
-  void XInputDevice::ParseControlsHelp( zTCombination& combination, string row ) {
-    string text = row.GetWordSmart( 2 );
-    if( text == "\"" )
-      text = row.GetPattern( "\"", "\"" );
-    else
-      text = zTHelpString::GetString( text );
+		Message::Fatal("Unknown control condition: " + token);
+	}
+}
 
-    combination.Help = zTCombination_Help::Create( text, combination.Combination );
-  }
 
 
+void XInputDevice::parseControlsHelp(Combination& combination, string row) {
+	string text = row.GetWordSmart(2);
+	if (text == "\"")
+		text = row.GetPattern("\"", "\"");
+	else
+		text = zTHelpString::GetString(text);
 
-  void XInputDevice::ParseControlsStringName( string& stringName, string row ) {
-    string name = row.GetWordSmart( 2 );
-    if( name.IsEmpty() )
-      Message::Fatal( "Empty string name in Gamepad file." );
+	combination.help = zTCombination_Help::Create(text, combination.combination);
+}
 
-    stringName = name;
-  }
 
 
+void XInputDevice::parseControlsStringName(string& stringName, string row) {
+	string name = row.GetWordSmart(2);
+	if (name.IsEmpty())
+		Message::Fatal("Empty string name in Gamepad file.");
 
-  void XInputDevice::ParseControlsStringText( string& stringName, string row ) {
-    if( stringName.IsEmpty() )
-      Message::Fatal( "Empty string name in Gamepad file." );
+	stringName = name;
+}
 
-    string lang = row.GetWordSmart( 1 );
-    string text = row.GetWordSmart( 2 );
-    if( text == "\"" )
-      text = row.GetPattern( "\"", "\"" );
-    else
-      text = zTHelpString::GetString( text );
 
-    zTHelpString::CreateString( stringName, text, lang );
-  }
-
-
-
-  void XInputDevice::ParseControlsStyleName( const string& fileName, string row ) {
-    string text = row.GetWordSmart( 2 );
-    if( text == "\"" )
-      text = row.GetPattern( "\"", "\"" );
-    else
-      text = zTHelpString::GetString( text );
-
-    zTGamepadControlInfo::RegisterStyleInfo( fileName, text );
-  }
-
-
-
-  inline string FileNamePart( const string& fileFullName ) {
-    string shortName = fileFullName.GetWord( "\\", -1 );
-    string namePart = shortName.GetWord( "." );
-    return namePart;
-  }
-
-
-
-  bool XInputDevice::ParseControlFile( const string& fileName ) {
-    bool initialized = false;
-    zTCombination combination;
-    string currentStringName;
 
-    string controlsFile;
-    if( !controlsFile.ReadFromVdf( fileName, VDF_DEFAULT | VDF_PHYSICALFIRST ) ) {
-      cmd << "Controls '" << fileName << "' not found" << endl;
-      return false;
-    }
-
-    CurrentControlsNamespace = FileNamePart( fileName );
-    rowString controlsRows = controlsFile;
-
-    for( uint i = 0; i < controlsRows.GetNum(); i++ ) {
-      CurrentControlsLine = i;
+void XInputDevice::parseControlsStringText(string& stringName, string row) {
+	if (stringName.IsEmpty())
+		Message::Fatal("Empty string name in Gamepad file.");
 
-      // Skip empty line
-      string& row = controlsRows[i];
-      if( row.Shrink().IsEmpty() )
-        continue;
-
-      // Skip comment line or blocks
-      string command = row.GetWordSmart( 1, true );
-      if( command == "//" || command.StartWith( "#" ) )
-        continue;
-      
-      // Check command
-      if( command == "KeyRecord" ) {
-
-        // End record and start new
-        if( initialized ) {
-          ParseControlsEndRecord( combination );
-          combination.Clear();
-          CurrentCimbinationLine = i;
-        }
-
-        // One press - one click ??
-        string mode = row.GetWordSmart( 2, true );
-        if( mode == "Toggled" )
-          combination.ToggleMode = true;
-
-        initialized = true;
-        continue;
-      }
-      else if( command == "KeyDisable" ) {
-        if( initialized ) {
-          ParseControlsEndRecord( combination );
-          combination.Clear();
-          // initialized = false;
-        }
-
-        string keyPart1 = row.GetWordSmart( 2, true );
-        string keyPart2 = row.GetWordSmart( 4, true );
-        string keyName;
-        if( keyPart2.IsEmpty() )
-          keyName = string::Combine( "%s.%s", CurrentControlsNamespace, keyPart1 );
-        else
-          keyName = string::Combine( "%s.%s", keyPart1, keyPart2 );
-
-        // cmd << "want to disable: " << keyName << endl;
-        for( uint i = 0; i < KeyCombinations.GetNum(); i++ ) {
-          if( keyName == KeyCombinations[i].Id ) {
-            KeyCombinations.RemoveAt( i );
-            break;
-          }
-        }
-        continue;
-      }
-
-           // Parse commands
-           if( command == "Id" )          ParseControlsId         ( combination, row );
-      else if( command == "Combination" ) ParseControlsCombination( combination, row );
-      else if( command == "Emulation" )   ParseControlsEmulation  ( combination, row );
-      else if( command == "Condition" )   ParseControlsCondition  ( combination, row );
-      else if( command == "Help" )        ParseControlsHelp       ( combination, row );
-      else if( command == "String" )      ParseControlsStringName ( currentStringName, row );
-      else if( command == "Rus" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Eng" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Ger" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Deu" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Pol" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Rou" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Ita" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Cze" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Esp" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "ControlName" ) continue;
-      else
-        // unknown command !!!
-        Message::Fatal( "Unknown controls command: " + command );
-    }
-
-    // End last record
-    if( initialized )
-      ParseControlsEndRecord( combination );
-
-    return true;
-  }
-
-
-
-
-
-
-  bool XInputDevice::ParseControlFileStrings( const string& fileName ) {
-    string currentStringName;
-    string controlsFile;
-    if( !controlsFile.ReadFromVdf( fileName, VDF_DEFAULT | VDF_PHYSICALFIRST ) ) {
-      cmd << "Controls not found" << endl;
-      return false;
-    }
-
-    rowString controlsRows = controlsFile;
-
-    for( uint i = 0; i < controlsRows.GetNum(); i++ ) {
-      // Skip empty line
-      string& row = controlsRows[i];
-      if( row.Shrink().IsEmpty() )
-        continue;
-
-      // Skip comment line or blocks
-      string command = row.GetWordSmart( 1, true );
-      if( command == "//" || command.StartWith( "#" ) )
-        continue;
-
-           if( command == "String" )      ParseControlsStringName ( currentStringName, row );
-      else if( command == "Rus" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Eng" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Ger" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Deu" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Pol" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Rou" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Ita" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Cze" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "Esp" )         ParseControlsStringText ( currentStringName, row );
-      else if( command == "ControlName" ) ParseControlsStyleName  ( fileName, row );
-      else continue;
-    }
-
-    return true;
-  }
+	string lang = row.GetWordSmart(1);
+	string text = row.GetWordSmart(2);
+	if (text == "\"")
+		text = row.GetPattern("\"", "\"");
+	else
+		text = zTHelpString::GetString(text);
+
+	zTHelpString::CreateString(stringName, text, lang);
+}
+
+
+
+void XInputDevice::parseControlsStyleName(const string& fileName, string row) {
+	string text = row.GetWordSmart(2);
+	if (text == "\"")
+		text = row.GetPattern("\"", "\"");
+	else
+		text = zTHelpString::GetString(text);
+
+	GamepadControlInfo::registerStyleInfo(fileName, text);
+}
+
+
+
+inline string FileNamePart(const string& fileFullName) {
+	string shortName = fileFullName.GetWord("\\", -1);
+	string namePart = shortName.GetWord(".");
+	return namePart;
+}
+
+
+
+bool XInputDevice::parseControlFile(string const& fileName)
+{
+	auto initialized = false;
+	auto combination = Combination();
+	auto currentStringName = string();
+
+	auto controlsFile = string();
+	if (!controlsFile.ReadFromVdf(fileName, VDF_DEFAULT | VDF_PHYSICALFIRST)) {
+		cmd << "Controls '" << fileName << "' not found" << endl;
+		return false;
+	}
+
+	CurrentControlsNamespace = FileNamePart(fileName);
+	auto controlsRows = rowString(controlsFile);
+
+	for (uint i = 0; i < controlsRows.GetNum(); i++) {
+		CurrentControlsLine = i;
+
+		// Skip empty line
+		string& row = controlsRows[i];
+		if (row.Shrink().IsEmpty())
+			continue;
+
+		// Skip comment line or blocks
+		string command = row.GetWordSmart(1, true);
+		if (command == "//" || command.StartWith("#"))
+			continue;
+
+		// Check command
+		if (command == "KeyRecord") {
+
+			// End record and start new
+			if (initialized) {
+				parseControlsEndRecord(combination);
+				combination.clear();
+				CurrentCimbinationLine = i;
+			}
+
+			// One press - one click ??
+			string mode = row.GetWordSmart(2, true);
+			if (mode == "Toggled")
+				combination.toggleMode = true;
+
+			initialized = true;
+			continue;
+		}
+		else if (command == "KeyDisable") {
+			if (initialized) {
+				parseControlsEndRecord(combination);
+				combination.clear();
+				// initialized = false;
+			}
+
+			string keyPart1 = row.GetWordSmart(2, true);
+			string keyPart2 = row.GetWordSmart(4, true);
+			string keyName;
+			if (keyPart2.IsEmpty())
+				keyName = string::Combine("%s.%s", CurrentControlsNamespace, keyPart1);
+			else
+				keyName = string::Combine("%s.%s", keyPart1, keyPart2);
+
+			// cmd << "want to disable: " << keyName << endl;
+			for (uint i = 0; i < keyCombinations.GetNum(); i++) {
+				if (keyName == keyCombinations[i].id) {
+					keyCombinations.RemoveAt(i);
+					break;
+				}
+			}
+			continue;
+		}
+
+		// Parse commands
+		if (command == "Id")				parseControlsId(combination, row);
+		else if (command == "Combination")	parseControlsCombination(combination, row);
+		else if (command == "Emulation")	parseControlsEmulation(combination, row);
+		else if (command == "Condition")	parseControlsCondition(combination, row);
+		else if (command == "Help")			parseControlsHelp(combination, row);
+		else if (command == "String")		parseControlsStringName(currentStringName, row);
+		else if (command == "Rus")			parseControlsStringText(currentStringName, row);
+		else if (command == "Eng")			parseControlsStringText(currentStringName, row);
+		else if (command == "Ger")			parseControlsStringText(currentStringName, row);
+		else if (command == "Deu")			parseControlsStringText(currentStringName, row);
+		else if (command == "Pol")			parseControlsStringText(currentStringName, row);
+		else if (command == "Rou")			parseControlsStringText(currentStringName, row);
+		else if (command == "Ita")			parseControlsStringText(currentStringName, row);
+		else if (command == "Cze")			parseControlsStringText(currentStringName, row);
+		else if (command == "Esp")			parseControlsStringText(currentStringName, row);
+		else if (command == "ControlName")	continue;
+		else
+			// unknown command !!!
+			Message::Fatal("Unknown controls command: " + command);
+	}
+
+	// End last record
+	if (initialized)
+		parseControlsEndRecord(combination);
+
+	return true;
+}
+
+
+
+
+
+
+bool XInputDevice::parseControlFileStrings(const string& fileName)
+{
+	auto currentStringName = string();
+	auto controlsFile = string();
+	if (!controlsFile.ReadFromVdf(fileName, VDF_DEFAULT | VDF_PHYSICALFIRST)) {
+		cmd << "Controls not found" << endl;
+		return false;
+	}
+
+	rowString controlsRows = controlsFile;
+
+	for (uint i = 0; i < controlsRows.GetNum(); i++) {
+		// Skip empty line
+		string& row = controlsRows[i];
+		if (row.Shrink().IsEmpty())
+			continue;
+
+		// Skip comment line or blocks
+		string command = row.GetWordSmart(1, true);
+		if (command == "//" || command.StartWith("#"))
+			continue;
+
+		if (command == "String")			parseControlsStringName(currentStringName, row);
+		else if (command == "Rus")			parseControlsStringText(currentStringName, row);
+		else if (command == "Eng")			parseControlsStringText(currentStringName, row);
+		else if (command == "Ger")			parseControlsStringText(currentStringName, row);
+		else if (command == "Deu")			parseControlsStringText(currentStringName, row);
+		else if (command == "Pol")			parseControlsStringText(currentStringName, row);
+		else if (command == "Rou")			parseControlsStringText(currentStringName, row);
+		else if (command == "Ita")			parseControlsStringText(currentStringName, row);
+		else if (command == "Cze")			parseControlsStringText(currentStringName, row);
+		else if (command == "Esp")			parseControlsStringText(currentStringName, row);
+		else if (command == "ControlName")	parseControlsStyleName(fileName, row);
+		else continue;
+	}
+
+	return true;
+}
 }

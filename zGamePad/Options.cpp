@@ -16,7 +16,7 @@ namespace GOTHIC_ENGINE {
     zSTRING quickBar_TextureBase = zoptions->ReadString( "ZGAMEPAD", "QuickBar_TextureBase", "QUICKSLOT" );
     zSTRING quickBar_Offsets     = zoptions->ReadString( "ZGAMEPAD", "QuickBar_Offsets",     "1.3, 1.0" );
     int quickSaveMode            = zoptions->ReadInt   ( "ZGAMEPAD", "QuickSaveMode",        1 );
-    int Vibration                = zoptions->ReadInt   ( "ZGAMEPAD", "Vibration",            1 );
+    int vibration                = zoptions->ReadInt   ( "ZGAMEPAD", "Vibration",            1 );
     int InvertY                  = zoptions->ReadInt   ( "ZGAMEPAD", "InvertY",              0 );
 
     auto& spOptions = Union.GetSysPackOption();
@@ -36,7 +36,7 @@ namespace GOTHIC_ENGINE {
     Opt_QuickBar_TextureBase = quickBar_TextureBase;
     Opt_QuickBar_Offsets     = quickBar_Offsets;
     Opt_QuickSaveMode        = quickSaveMode;
-    Opt_Vibration            = Vibration;
+    Opt_Vibration            = vibration;
     Opt_InvertY              = InvertY;
 
     zLastSaveInfo::GetInstance().SetSaveMode( (zLastSaveInfoMode)Opt_QuickSaveMode );
