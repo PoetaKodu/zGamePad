@@ -2,329 +2,328 @@
 // Union SOURCE file
 
 namespace GOTHIC_ENGINE {
-  bool*         keyevent  =  (bool*)        ZenDef( 0x0086CCC8, 0x008B27C0, 0x008C3020, 0x008D1678 );
-  bool*         keytoggle =  (bool*)        ZenDef( 0x0086CED0, 0x008B29D4, 0x008C3260, 0x008D18B8 );
-  zCArray<int>& keybuffer = *(zCArray<int>*)ZenDef( 0x0086D2DC, 0x008B2E00, 0x008C36F0, 0x008D1D50 );
+bool* keyevent = (bool*)ZenDef(0x0086CCC8, 0x008B27C0, 0x008C3020, 0x008D1678);
+bool* keytoggle = (bool*)ZenDef(0x0086CED0, 0x008B29D4, 0x008C3260, 0x008D18B8);
+zCArray<int>& keybuffer = *(zCArray<int>*)ZenDef(0x0086D2DC, 0x008B2E00, 0x008C36F0, 0x008D1D50);
 
 
 
-  void SetKeyStateAndInsert( DXKEY keyID, bool_t state ) {
-    bool keyEventBefore = keyevent[keyID];
-    keyevent[keyID] = state != 0;
-    if( keyevent[keyID] ) {
-      keybuffer.InsertEnd( keyID );
-      keytoggle[keyID] = !keyEventBefore;
-    }
-  }
+void SetKeyStateAndInsert(DXKEY keyID, bool_t state) {
+	bool keyEventBefore = keyevent[keyID];
+	keyevent[keyID] = state != 0;
+	if (keyevent[keyID]) {
+		keybuffer.InsertEnd(keyID);
+		keytoggle[keyID] = !keyEventBefore;
+	}
+}
 
 
 
-  DXKEY GetBinded( uint16 bind ) {
-    zCArray<uint16> keys;
-    if( zinput->GetBinding( bind, keys ) )
-      if( keys.GetNum() )
-        return keys[0];
+DXKEY GetBinded(uint16 bind) {
+	zCArray<uint16> keys;
+	if (zinput->GetBinding(bind, keys))
+		if (keys.GetNum())
+			return keys[0];
 
-    return Invalid;
-  }
+	return Invalid;
+}
 
 
 
-  zTCombination::zTCombination() {
-    Enabled = false;
-    Help = Null;
-    Clear();
-  }
+zTCombination::zTCombination() {
+	Enabled = false;
+	Help = Null;
+	Clear();
+}
 
 
 
-  bool zTCombination::operator == ( const zTCombination& other ) const {
-    return Combination.GetNum() == other.Combination.GetNum();
-  }
+bool zTCombination::operator == (const zTCombination& other) const {
+	return Combination.GetNum() == other.Combination.GetNum();
+}
 
 
 
-  bool zTCombination::operator < ( const zTCombination& other ) const {
-    return Combination.GetNum() > other.Combination.GetNum();
-  }
+bool zTCombination::operator < (const zTCombination& other) const {
+	return Combination.GetNum() > other.Combination.GetNum();
+}
 
 
 
-  bool zTCombination::operator > ( const zTCombination& other ) const {
-    return Combination.GetNum() < other.Combination.GetNum();
-  }
+bool zTCombination::operator > (const zTCombination& other) const {
+	return Combination.GetNum() < other.Combination.GetNum();
+}
 
-  
 
-  void zTCombination::CheckDisable( JOYKEY& keys ) {
-    SetHelpEnable( false );
-    for( uint i = 0; i < Combination.GetNum(); i++ ) {
-      JOYKEY key = keys & Combination[i];
-      if( !key )
-        return Disable();
-    }
-  }
 
+void zTCombination::CheckDisable(JOYKEY& keys) {
+	SetHelpEnable(false);
+	for (uint i = 0; i < Combination.GetNum(); i++) {
+		JOYKEY key = keys & Combination[i];
+		if (!key)
+			return Disable();
+	}
+}
 
 
-  void zTCombination::Disable() {
-    if( !Enabled )
-      return;
 
-    Enabled = false;
-    if( !Toggled )
-      return;
+void zTCombination::Disable() {
+	if (!Enabled)
+		return;
 
-    Toggled = false;
-    SetEmulationState( False );
-  }
+	Enabled = false;
+	if (!Toggled)
+		return;
 
+	Toggled = false;
+	SetEmulationState(False);
+}
 
 
-  bool HasFlag( int value, int flag ) {
-    return (value & flag) == flag;
-  }
 
+bool HasFlag(int value, int flag) {
+	return (value & flag) == flag;
+}
 
 
-  bool zTCombination::CheckAllConditions() {
-    for( uint i = 0; i < AllowConditions.GetNum(); i++ )
-      if( !Gamepad_GetStaticCondition( AllowConditions[i] ) )
-        return false;
 
-    for( uint i = 0; i < DenyConditions.GetNum(); i++ )
-      if( Gamepad_GetStaticCondition( DenyConditions[i] ) )
-        return false;
+bool zTCombination::CheckAllConditions() {
+	for (uint i = 0; i < AllowConditions.GetNum(); i++)
+		if (!Gamepad_GetStaticCondition(AllowConditions[i]))
+			return false;
 
-    for( uint i = 0; i < AllowButtons.GetNum(); i++ )
-      if( !zinput->KeyPressed( AllowButtons[i] ) )
-        return false;
+	for (uint i = 0; i < DenyConditions.GetNum(); i++)
+		if (Gamepad_GetStaticCondition(DenyConditions[i]))
+			return false;
 
-    for( uint i = 0; i < DenyButtons.GetNum(); i++ )
-      if( zinput->KeyPressed( DenyButtons[i] ) )
-        return false;
+	for (uint i = 0; i < AllowButtons.GetNum(); i++)
+		if (!zinput->KeyPressed(AllowButtons[i]))
+			return false;
 
-    SetHelpEnable( true );
+	for (uint i = 0; i < DenyButtons.GetNum(); i++)
+		if (zinput->KeyPressed(DenyButtons[i]))
+			return false;
 
-    if( !CheckKeyStateConditions() )
-      return false;
+	SetHelpEnable(true);
 
-    return true;
-  }
+	if (!CheckKeyStateConditions())
+		return false;
 
+	return true;
+}
 
 
-  bool zTCombination::CheckKeyStateConditions() {
-    for( uint i = 0; i < AllowCombinations.GetNum(); i++ )
-      if( !HasFlag( KeyStates, AllowCombinations[i] ) )
-        return false;
 
-    for( uint i = 0; i < DenyCombinations.GetNum(); i++ )
-      if( HasFlag( KeyStates, DenyCombinations[i] ) )
-        return false;
+bool zTCombination::CheckKeyStateConditions() {
+	for (uint i = 0; i < AllowCombinations.GetNum(); i++)
+		if (!HasFlag(KeyStates, AllowCombinations[i]))
+			return false;
 
-    return true;
-  }
+	for (uint i = 0; i < DenyCombinations.GetNum(); i++)
+		if (HasFlag(KeyStates, DenyCombinations[i]))
+			return false;
 
+	return true;
+}
 
 
-  bool zTCombination::CheckEnable( JOYKEY& keys ) {
-    if( !CheckAllConditions() )
-      return false;
 
-    if( Emulation.GetNum() == 0 )
-      return false;
+bool zTCombination::CheckEnable(JOYKEY& keys) {
+	if (!CheckAllConditions())
+		return false;
 
-    JOYKEY flags = keys;
-    bool success = true;
+	if (Emulation.GetNum() == 0)
+		return false;
 
-    for( uint i = 0; i < Combination.GetNum(); i++ ) {
-      JOYKEY key = keys & Combination[i];
-      flags ^= Combination[i];
+	JOYKEY flags = keys;
+	bool success = true;
 
-      if( !key ) {
-        success = false;
-        break;
-      }
-    }
+	for (uint i = 0; i < Combination.GetNum(); i++) {
+		JOYKEY key = keys & Combination[i];
+		flags ^= Combination[i];
 
-    if( success ) {
-      keys = flags;
-      Enable();
-    }
+		if (!key) {
+			success = false;
+			break;
+		}
+	}
 
-    return success;
-  }
+	if (success) {
+		keys = flags;
+		Enable();
+	}
 
+	return success;
+}
 
 
-  void zTCombination::Enable() {
-    if( Enabled ) {
-      if( ToggleMode && Toggled ) {
-        Toggled = false;
-        SetEmulationState( False );
-      }
 
-      return;
-    }
-    else if( HasToggledKeys() )
-      return;
+void zTCombination::Enable() {
+	if (Enabled) {
+		if (ToggleMode && Toggled) {
+			Toggled = false;
+			SetEmulationState(False);
+		}
 
-    Enabled = true;
-    Toggled = true;
-    SetEmulationState( True );
-  }
+		return;
+	}
+	else if (hasKeysToggled())
+		return;
 
+	Enabled = true;
+	Toggled = true;
+	SetEmulationState(True);
+}
 
 
-  void zTCombination::SetHelpEnable( bool enable ) {
-    if( Help != Null )
-      Help->Enabled = enable;
-  }
 
+void zTCombination::SetHelpEnable(bool enable) {
+	if (Help != Null)
+		Help->Enabled = enable;
+}
 
 
-  bool zTCombination::HasToggledKeys() {
-    JOYKEY joyKeys = 0;
-    for( uint i = 0; i < Combination.GetNum(); i++ )
-      joyKeys |= Combination[i];
 
-    return XInputDevice.HasToggledKeys( joyKeys );
-  }
+bool zTCombination::hasKeysToggled() {
+	JOYKEY joyKeys = 0;
+	for (uint i = 0; i < Combination.GetNum(); i++)
+		joyKeys |= Combination[i];
 
+	return xinputDevice.hasKeysToggled(joyKeys);
+}
 
 
-  void zTCombination::AddCombination( JOYKEY keys_first ... ) {
-    JOYKEY* keys = &keys_first;
 
-    for( uint i = 0; true; i++ ) {
-      if( keys[i] == 0 )
-        break;
+void zTCombination::AddCombination(JOYKEY keys_first ...) {
+	JOYKEY* keys = &keys_first;
 
-      Combination += keys[i];
-    }
-  }
+	for (uint i = 0; true; i++) {
+		if (keys[i] == 0)
+			break;
 
+		Combination += keys[i];
+	}
+}
 
 
-  void zTCombination::AddEmulation( DXKEY keys_first ... ) {
-    DXKEY* keys = &keys_first;
 
-    for( uint i = 0; true; i++ ) {
-      if( keys[i] == 0 )
-        break;
+void zTCombination::AddEmulation(DXKEY keys_first ...) {
+	DXKEY* keys = &keys_first;
 
-      Emulation += keys[i];
-    }
-  }
+	for (uint i = 0; true; i++) {
+		if (keys[i] == 0)
+			break;
 
+		Emulation += keys[i];
+	}
+}
 
 
-  void zTCombination::AddAllowFunctions( bool (*conditions)() ... ) {
-    auto* keys = &conditions;
 
-    for( uint i = 0; true; i++ ) {
-      if( keys[i] == 0 )
-        break;
+void zTCombination::AddAllowFunctions(bool (*conditions)() ...) {
+	auto* keys = &conditions;
 
-      AllowConditions += keys[i];
-    }
-  }
+	for (uint i = 0; true; i++) {
+		if (keys[i] == 0)
+			break;
 
+		AllowConditions += keys[i];
+	}
+}
 
 
-  void zTCombination::AddDenyFunctions( bool( *conditions )() ... ) {
-    auto* keys = &conditions;
 
-    for( uint i = 0; true; i++ ) {
-      if( keys[i] == 0 )
-        break;
+void zTCombination::AddDenyFunctions(bool(*conditions)() ...) {
+	auto* keys = &conditions;
 
-      DenyConditions += keys[i];
-    }
-  }
+	for (uint i = 0; true; i++) {
+		if (keys[i] == 0)
+			break;
 
+		DenyConditions += keys[i];
+	}
+}
 
 
-  void zTCombination::AddAllowButtons( DXKEY keys ... ) {
-    auto* __keys = &keys;
 
-    for( uint i = 0; true; i++ ) {
-      if( __keys[i] == 0 )
-        break;
+void zTCombination::AddAllowButtons(DXKEY keys ...) {
+	auto* __keys = &keys;
 
-      AllowButtons += __keys[i];
-    }
-  }
+	for (uint i = 0; true; i++) {
+		if (__keys[i] == 0)
+			break;
 
+		AllowButtons += __keys[i];
+	}
+}
 
 
-  void zTCombination::AddDenyButtons( DXKEY keys ... ) {
-    auto* __keys = &keys;
 
-    for( uint i = 0; true; i++ ) {
-      if( __keys[i] == 0 )
-        break;
+void zTCombination::AddDenyButtons(DXKEY keys ...) {
+	auto* __keys = &keys;
 
-      DenyButtons += __keys[i];
-    }
-  }
+	for (uint i = 0; true; i++) {
+		if (__keys[i] == 0)
+			break;
 
+		DenyButtons += __keys[i];
+	}
+}
 
 
-  void zTCombination::AddAllowCombinations( DXKEY keys ... ) {
-    auto* __keys = &keys;
 
-    for( uint i = 0; true; i++ ) {
-      if( __keys[i] == 0 )
-        break;
+void zTCombination::AddAllowCombinations(DXKEY keys ...) {
+	auto* __keys = &keys;
 
-      AllowCombinations += __keys[i];
-    }
-  }
+	for (uint i = 0; true; i++) {
+		if (__keys[i] == 0)
+			break;
 
+		AllowCombinations += __keys[i];
+	}
+}
 
 
-  void zTCombination::AddDenyCombinations( DXKEY keys ... ) {
-    auto* __keys = &keys;
 
-    for( uint i = 0; true; i++ ) {
-      if( __keys[i] == 0 )
-        break;
+void zTCombination::AddDenyCombinations(DXKEY keys ...) {
+	auto* __keys = &keys;
 
-      DenyCombinations += __keys[i];
-    }
-  }
+	for (uint i = 0; true; i++) {
+		if (__keys[i] == 0)
+			break;
 
+		DenyCombinations += __keys[i];
+	}
+}
 
 
-  void zTCombination::SetEmulationState( bool_t state ) {
-    for( uint i = 0; i < Emulation.GetNum(); i++ )
-      SetKeyStateAndInsert( Emulation[i], state );
-  }
 
+void zTCombination::SetEmulationState(bool_t state) {
+	for (uint i = 0; i < Emulation.GetNum(); i++)
+		SetKeyStateAndInsert(Emulation[i], state);
+}
 
 
-  void zTCombination::Clear() {
-    Combination.Clear();
-    Emulation.Clear();
-    AllowConditions.Clear();
-    DenyConditions.Clear();
-    AllowButtons.Clear();
-    DenyButtons.Clear();
-    AllowCombinations.Clear();
-    DenyCombinations.Clear();
-    ToggleMode = false;
-    Toggled = false;
-    KeyStates = None;
-    Help = Null;
-  }
 
+void zTCombination::Clear() {
+	Combination.Clear();
+	Emulation.Clear();
+	AllowConditions.Clear();
+	DenyConditions.Clear();
+	AllowButtons.Clear();
+	DenyButtons.Clear();
+	AllowCombinations.Clear();
+	DenyCombinations.Clear();
+	ToggleMode = false;
+	Toggled = false;
+	KeyStates = None;
+	Help = Null;
+}
 
 
-  zTCombination::~zTCombination() {
-  }
 
+zTCombination::~zTCombination() {
+}
 
 
 
@@ -333,448 +332,440 @@ namespace GOTHIC_ENGINE {
 
 
 
-  void zCXInputDevice::InitDevice() {
-    InitializeCompatibleXInput();
-    Gamepad = XINPUT_STATE();
-    Capabilities = PXINPUT_CAPABILITIES();
-    ZeroMemory( &Gamepad, sizeof( XINPUT_STATE ) );
-    KeyStates = (zEXInputKey)0;
-    UpdateControls();
-  }
 
+void XInputDevice::init() {
+	InitializeCompatibleXInput();
+	Gamepad = XINPUT_STATE();
+	Capabilities = PXINPUT_CAPABILITIES();
+	ZeroMemory(&Gamepad, sizeof(XINPUT_STATE));
+	KeyStates = (XInputKey)0;
+	updateControls();
+}
 
 
-  void zCXInputDevice::UpdateControls() {
-    KeyCombinations.Clear();
-    InitCombinations();
 
-    XINPUTGETSTATE( 0, &Gamepad );
-    for( uint i = 0; i < KeyCombinations.GetNum(); i++ )
-      KeyCombinations[i].KeyStates = Gamepad.Gamepad.wButtons;
-  }
+void XInputDevice::updateControls() {
+	KeyCombinations.Clear();
+	InitCombinations();
 
+	XINPUTGETSTATE(0, &Gamepad);
+	for (uint i = 0; i < KeyCombinations.GetNum(); i++)
+		KeyCombinations[i].KeyStates = Gamepad.Gamepad.wButtons;
+}
 
 
-  void zCXInputDevice::UpdateVibration() {
-    if( !Opt_Vibration || !VibrationIsEnabled ) {
-      if( VibrationMessage.Index != Invalid ) {
-        VibrationMessage.Index = Invalid;
-        Vibration.wLeftMotorSpeed = 0;
-        Vibration.wRightMotorSpeed = 0;
-        XINPUTSETSTATE( 0, &Vibration );
-      }
-      
-      return;
-    }
 
-    if( VibrationMessage.Index == Invalid )
-      return;
+void XInputDevice::UpdateVibration() {
+	if (!Opt_Vibration || !VibrationIsEnabled) {
+		if (VibrationMessage.Index != Invalid) {
+			VibrationMessage.Index = Invalid;
+			Vibration.wLeftMotorSpeed = 0;
+			Vibration.wRightMotorSpeed = 0;
+			XINPUTSETSTATE(0, &Vibration);
+		}
 
-    VibrationMessage.Timer.ClearUnused();
-    if( VibrationMessage.Timer[0u].Await( 150, true ) ) {
+		return;
+	}
 
-      string strength = VibrationMessage.Pattern.GetWordSmart( ++VibrationMessage.Index );
-      if( strength.IsEmpty() ) {
-        VibrationMessage.Index     = Invalid;
-        Vibration.wLeftMotorSpeed  = 0;
-        Vibration.wRightMotorSpeed = 0;
-      }
-      else {
-        Vibration.wLeftMotorSpeed  = strength.ToInt32(); // big motor
-        Vibration.wRightMotorSpeed = 0;                  // small motor
-      }
+	if (VibrationMessage.Index == Invalid)
+		return;
 
-      XINPUTSETSTATE( 0, &Vibration );
-    }
-  }
+	VibrationMessage.Timer.ClearUnused();
+	if (VibrationMessage.Timer[0u].Await(150, true)) {
 
+		string strength = VibrationMessage.Pattern.GetWordSmart(++VibrationMessage.Index);
+		if (strength.IsEmpty()) {
+			VibrationMessage.Index = Invalid;
+			Vibration.wLeftMotorSpeed = 0;
+			Vibration.wRightMotorSpeed = 0;
+		}
+		else {
+			Vibration.wLeftMotorSpeed = strength.ToInt32(); // big motor
+			Vibration.wRightMotorSpeed = 0;                  // small motor
+		}
 
+		XINPUTSETSTATE(0, &Vibration);
+	}
+}
 
-  int sqrti( int a ) {
-    return (int)sqrt( (float)a );
-  }
 
 
+int sqrti(int a) {
+	return (int)sqrt((float)a);
+}
 
-  void zCXInputDevice::UpdateLeftSticksState() {
-    static bool runActive = false;
-    static Timer timer;
-    timer.ClearUnused();
 
-    // Maximum of Triggers or Sticks - 65536
-    if (!DeviceConnected)
-    {
-        LeftStick.X = DS4Device.getLeftStick().X;
-        LeftStick.Y = DS4Device.getLeftStick().Y;
-    }
-    else
-    {
-        LeftStick.X = Gamepad.Gamepad.sThumbLX;
-        LeftStick.Y = Gamepad.Gamepad.sThumbLY;
-    }
 
-    int length    = sqrti( LeftStick.X * LeftStick.X + LeftStick.Y * LeftStick.Y );
-    StrafePressed = false;
+void XInputDevice::UpdateLeftSticksState() {
+	static bool runActive = false;
+	static Timer timer;
+	timer.ClearUnused();
 
-    if( length > DEADZONE_L ) {
-      StrafePressed = abs( LeftStick.X * 5 ) > abs( LeftStick.Y * 7 );
+	// Maximum of Triggers or Sticks - 65536
+	if (!DeviceConnected)
+	{
+		LeftStick.x = DS4Device.getLeftStick().x;
+		LeftStick.y = DS4Device.getLeftStick().y;
+	}
+	else
+	{
+		LeftStick.x = Gamepad.Gamepad.sThumbLX;
+		LeftStick.y = Gamepad.Gamepad.sThumbLY;
+	}
 
-      // Check strafe
-      if( Opt_MotionType == 0 && StrafePressed ) {
-        KeyStates |= LeftStick.X > 0 ?
-          GameRightStrafe :
-          GameLeftStrafe;
-      }
-      else
-      {
-        // Check run
-        if( LeftStick.Y > 0 || StrafePressed ) {
-          WalkBack = false;
-          if( runActive || timer[0u].Await( 20 ) ) {
-            runActive = true;
+	int length = sqrti(LeftStick.x * LeftStick.x + LeftStick.y * LeftStick.y);
+	StrafePressed = false;
 
-            // Walk situations
-            bool canWalk = length <= 25000 && !(player && player->fmode) && !Cond_CanSneaking();
+	if (length > DEADZONE_L) {
+		StrafePressed = abs(LeftStick.x * 5) > abs(LeftStick.y * 7);
 
-            KeyStates |= canWalk ?
-              GameWalk :
-              GameForward;
-          }
-        }
-        else {
-          KeyStates |= GameBackward;
-          WalkBack = true;
-        }
-      }
-    }
-    else if( runActive ) {
-      runActive = false;
-      timer[0u].Delete();
-    }
-  }
+		// Check strafe
+		if (Opt_MotionType == 0 && StrafePressed) {
+			KeyStates |= LeftStick.x > 0 ?
+				GameRightStrafe :
+				GameLeftStrafe;
+		}
+		else
+		{
+			// Check run
+			if (LeftStick.y > 0 || StrafePressed) {
+				WalkBack = false;
+				if (runActive || timer[0u].Await(20)) {
+					runActive = true;
 
+					// Walk situations
+					bool canWalk = length <= 25000 && !(player && player->fmode) && !Cond_CanSneaking();
 
+					KeyStates |= canWalk ?
+						GameWalk :
+						GameForward;
+				}
+			}
+			else {
+				KeyStates |= GameBackward;
+				WalkBack = true;
+			}
+		}
+	}
+	else if (runActive) {
+		runActive = false;
+		timer[0u].Delete();
+	}
+}
 
-  void zCXInputDevice::UpdateRightSticksState() {
 
-    if (!DeviceConnected)
-    {
-        LeftTrigger = (int)DS4Device.getLeftTrigger();
-        RightTrigger = (int)DS4Device.getRightTrigger();
-    }
-    else
-    {
-        LeftTrigger = Gamepad.Gamepad.bLeftTrigger;
-        RightTrigger = Gamepad.Gamepad.bRightTrigger;
-    }
 
-    if( LeftTrigger > 50 )
-      KeyStates |= GameParade;
+void XInputDevice::UpdateRightSticksState() {
 
-    if( RightTrigger > 50 )
-      KeyStates |= GamePunch;
-  }
+	if (!DeviceConnected)
+	{
+		LeftTrigger = (int)DS4Device.getLeftTrigger();
+		RightTrigger = (int)DS4Device.getRightTrigger();
+	}
+	else
+	{
+		LeftTrigger = Gamepad.Gamepad.bLeftTrigger;
+		RightTrigger = Gamepad.Gamepad.bRightTrigger;
+	}
 
+	if (LeftTrigger > 50)
+		KeyStates |= GameParade;
 
+	if (RightTrigger > 50)
+		KeyStates |= GamePunch;
+}
 
 
 
 
 
-  
 
 
 
 
 
-  void zCXInputDevice::UpdateSticksState() {
-    bool diveMode = Cond_Diving();
-    UpdateLeftSticksState();
 
-    if( !diveMode )
-      UpdateRightSticksState();
 
-    // Dive inverse
-    int leftStick, rightStick;
-    int invY = Opt_InvertY ? -1 : 1;
 
-    if( !DeviceConnected ) {
-      leftStick  = (diveMode ? DS4Device.getLeftStick().X : DS4Device.getRightStick().X);
-      rightStick = (diveMode ? DS4Device.getLeftStick().Y : DS4Device.getRightStick().Y * invY);
-    }
-    else {
-      leftStick  = (diveMode ? Gamepad.Gamepad.sThumbLX : Gamepad.Gamepad.sThumbRX);
-      rightStick = (diveMode ? Gamepad.Gamepad.sThumbLY : Gamepad.Gamepad.sThumbRY * invY);
-    }
+void XInputDevice::UpdateSticksState() {
+	bool diveMode = Cond_Diving();
+	UpdateLeftSticksState();
 
-    RightStick.X = abs( leftStick  ) > DEADZONE_R ? leftStick  : 0;
-    RightStick.Y = abs( rightStick ) > DEADZONE_R ? rightStick : 0;
+	if (!diveMode)
+		UpdateRightSticksState();
 
-    if( RightStick.X ) RightStick.X += leftStick  > 0 ? (int)-DEADZONE_R : (int)+DEADZONE_R;
-    if( RightStick.Y ) RightStick.Y += rightStick > 0 ? (int)-DEADZONE_R : (int)+DEADZONE_R;
-  }
+	// Dive inverse
+	int leftStick, rightStick;
+	int invY = Opt_InvertY ? -1 : 1;
 
+	if (!DeviceConnected) {
+		leftStick = (diveMode ? DS4Device.getLeftStick().x : DS4Device.getRightStick().x);
+		rightStick = (diveMode ? DS4Device.getLeftStick().y : DS4Device.getRightStick().y * invY);
+	}
+	else {
+		leftStick = (diveMode ? Gamepad.Gamepad.sThumbLX : Gamepad.Gamepad.sThumbRX);
+		rightStick = (diveMode ? Gamepad.Gamepad.sThumbLY : Gamepad.Gamepad.sThumbRY * invY);
+	}
 
+	RightStick.x = abs(leftStick) > DEADZONE_R ? leftStick : 0;
+	RightStick.y = abs(rightStick) > DEADZONE_R ? rightStick : 0;
 
-  bool zCXInputDevice::ForceVideoSkipping() {
-    static bool skipReady = false;
+	if (RightStick.x) RightStick.x += leftStick > 0 ? (int)-DEADZONE_R : (int)+DEADZONE_R;
+	if (RightStick.y) RightStick.y += rightStick > 0 ? (int)-DEADZONE_R : (int)+DEADZONE_R;
+}
 
-    if( !ActiveVideo ) {
-      if( skipReady )
-        skipReady = false;
 
-      return false;
-    }
 
-    if( !KeyStates )
-      skipReady = true;
+bool XInputDevice::ForceVideoSkipping() {
+	static bool skipReady = false;
 
-    if( KeyStates && skipReady ) {
-      SetKeyStateAndInsert( KEY_ESCAPE, True );
-      skipReady = false;
-    }
+	if (!ActiveVideo) {
+		if (skipReady)
+			skipReady = false;
 
-    return true;
-  }
+		return false;
+	}
 
+	if (!KeyStates)
+		skipReady = true;
 
+	if (KeyStates && skipReady) {
+		SetKeyStateAndInsert(KEY_ESCAPE, True);
+		skipReady = false;
+	}
 
-  void zCXInputDevice::DisplayDisconnect() {
-    static zCMenu* menu = Null;
-    if( menu == Null ) {
-      menu = zCMenu::Create( "ZGAMEPAD_MENU_DISCONNECTED" );
-      if( menu ) {
-        ogame->Pause();
-        menu->Run();
-        menu->Release();
-        ogame->Unpause();
-        menu = Null;
-      }
-    }
-  }
+	return true;
+}
 
 
 
-  void zCXInputDevice::UpdateKeyState() {
-    if( !zinput )
-      return;
+void XInputDevice::DisplayDisconnect() {
+	static zCMenu* menu = Null;
+	if (menu == Null) {
+		menu = zCMenu::Create("ZGAMEPAD_MENU_DISCONNECTED");
+		if (menu) {
+			ogame->Pause();
+			menu->Run();
+			menu->Release();
+			ogame->Unpause();
+			menu = Null;
+		}
+	}
+}
 
-    bool DSInputDisconnected = !DS4Device.checkConnection();
-    bool XInputDisconnected = XINPUTGETSTATE(Opt_ControllerID, &Gamepad) == ERROR_DEVICE_NOT_CONNECTED;
 
-    DeviceConnected = !XInputDisconnected;
-    DS4Device.connected = !DSInputDisconnected;
 
-    if(XInputDisconnected && DSInputDisconnected) {
-      if (DeviceConnected || DS4Device.connected) {
-            DisplayDisconnect();
-      }
-      return;
-    }
-    
-    if (!DeviceConnected) {
-        DS4Device.update();
-        KeyStates = DS4Device.getKeyState();
-    }
-    else {
-        KeyStates = Gamepad.Gamepad.wButtons;
-    }
-    
-    UpdateSticksState();
-    KeyStatesReal = KeyStates;
+void XInputDevice::UpdateKeyState() {
+	if (!zinput)
+		return;
 
-    if( ForceVideoSkipping() || !ogame )
-     return;
+	bool DSInputDisconnected = !DS4Device.checkConnection();
+	bool XInputDisconnected = XINPUTGETSTATE(Opt_ControllerID, &Gamepad) == ERROR_DEVICE_NOT_CONNECTED;
 
-    if( !Opt_GamepadEnabled )
-      return;
+	DeviceConnected = !XInputDisconnected;
+	DS4Device.connected = !DSInputDisconnected;
+
+	if (XInputDisconnected && DSInputDisconnected) {
+		if (DeviceConnected || DS4Device.connected) {
+			DisplayDisconnect();
+		}
+		return;
+	}
+
+	if (!DeviceConnected) {
+		DS4Device.update();
+		KeyStates = DS4Device.getKeyState();
+	}
+	else {
+		KeyStates = Gamepad.Gamepad.wButtons;
+	}
+
+	UpdateSticksState();
+	KeyStatesReal = KeyStates;
+
+	if (ForceVideoSkipping() || !ogame)
+		return;
+
+	if (!Opt_GamepadEnabled)
+		return;
 
 #if 0
-    static uint lastBattery    = 0;
-           uint currentbattery = GetBatteryLevel();
+	static uint lastBattery = 0;
+	uint currentbattery = getBatteryLevel();
 
-    if( currentbattery == 0 && lastBattery > 0 ) {
-      static zCMenu* menu = Null;
-      if( menu == Null ) {
-        menu = zCMenu::Create( "ZGAMEPAD_MENU_DISCONNECTED" );
-        if( menu ) {
-          ogame->Pause();
-          menu->Run();
-          menu->Release();
-          ogame->Unpause();
-          menu = Null;
-        }
-      }
-    }
+	if (currentbattery == 0 && lastBattery > 0) {
+		static zCMenu* menu = Null;
+		if (menu == Null) {
+			menu = zCMenu::Create("ZGAMEPAD_MENU_DISCONNECTED");
+			if (menu) {
+				ogame->Pause();
+				menu->Run();
+				menu->Release();
+				ogame->Unpause();
+				menu = Null;
+			}
+		}
+	}
 
-    lastBattery = currentbattery;
+	lastBattery = currentbattery;
 #endif
 
-    // Important: Update a statick condition
-    // information for the faster access !!!
-    Gamepad_UpdateStaticConditions();
+	// Important: Update a statick condition
+	// information for the faster access !!!
+	Gamepad_UpdateStaticConditions();
 
-    for( uint i = 0; i < KeyCombinations.GetNum(); i++ )
-      KeyCombinations[i].CheckDisable( KeyStates );
-    
-    // For correclty hints drawing this
-    // condition should be always true
-    if( KeyStates || Opt_HintsEnabled )
-      for( uint i = 0; i < KeyCombinations.GetNum(); i++ )
-        KeyCombinations[i].CheckEnable( KeyStates );
+	for (uint i = 0; i < KeyCombinations.GetNum(); i++)
+		KeyCombinations[i].CheckDisable(KeyStates);
 
-    UpdateLastKeyState();
+	// For correclty hints drawing this
+	// condition should be always true
+	if (KeyStates || Opt_HintsEnabled)
+		for (uint i = 0; i < KeyCombinations.GetNum(); i++)
+			KeyCombinations[i].CheckEnable(KeyStates);
 
-    if( player ) {
-      static Timer helper;
-      helper.ClearUnused();
-      KeyStates = Gamepad.Gamepad.wButtons;
+	UpdateLastKeyState();
 
-      if( (KeyStates & JOY_LSTICK) && (KeyStates & JOY_RSTICK) ) {
-          if (helper[0u].Await(2000))
-          {
-              auto pos = player->GetPositionWorld();
-              player->EmergencyResetPos(pos);
-          }
-      }
-      else
-        helper[0u].Delete();
-    }
-  }
+	if (player) {
+		static Timer helper;
+		helper.ClearUnused();
+		KeyStates = Gamepad.Gamepad.wButtons;
 
-
-  void zCXInputDevice::UpdateLastKeyState() {
-      if (!DeviceConnected)
-      {
-          WORD DSKeyState = DS4Device.getKeyState();
-          for (uint i = 0; i < KeyCombinations.GetNum(); i++)
-              KeyCombinations[i].KeyStates = DSKeyState;
-      }
-      else
-      {
-          for (uint i = 0; i < KeyCombinations.GetNum(); i++)
-              KeyCombinations[i].KeyStates = Gamepad.Gamepad.wButtons;
-      }
-  }
+		if ((KeyStates & JOY_LSTICK) && (KeyStates & JOY_RSTICK)) {
+			if (helper[0u].Await(2000))
+			{
+				auto pos = player->GetPositionWorld();
+				player->EmergencyResetPos(pos);
+			}
+		}
+		else
+			helper[0u].Delete();
+	}
+}
 
 
+void XInputDevice::UpdateLastKeyState() {
+	if (!DeviceConnected)
+	{
+		WORD DSKeyState = DS4Device.getKeyState();
+		for (uint i = 0; i < KeyCombinations.GetNum(); i++)
+			KeyCombinations[i].KeyStates = DSKeyState;
+	}
+	else
+	{
+		for (uint i = 0; i < KeyCombinations.GetNum(); i++)
+			KeyCombinations[i].KeyStates = Gamepad.Gamepad.wButtons;
+	}
+}
 
-  void zCXInputDevice::UpdateGamePad() {
-    UpdateKeyState();
-    UpdateVibration();
-  }
+void XInputDevice::updateDevice() {
+	UpdateKeyState();
+	UpdateVibration();
+}
 
+void XInputDevice::startVibration(string ptr) {
+	VibrationMessage.Index = 0;
+	VibrationMessage.Pattern = ptr;
+	VibrationMessage.Timer[0u].Delete();
+}
 
+uint XInputDevice::getBatteryLevel() const {
+	XINPUT_BATTERY_INFORMATION batteryInformation;
+	if (!XINPUTGETBATTERYINFORMATION(Opt_ControllerID, BATTERY_DEVTYPE_GAMEPAD, &batteryInformation) != ERROR_SUCCESS)
+		/*return BATTERY_LEVEL_FAKE*/;
 
-  void zCXInputDevice::StartVibration( string ptr ) {
-    VibrationMessage.Index = 0;
-    VibrationMessage.Pattern = ptr;
-    VibrationMessage.Timer[0u].Delete();
-  }
+	return batteryInformation.BatteryLevel;
+}
 
+bool XInputDevice::IsBatteryLow() const {
+	return getBatteryLevel() <= BATTERY_LEVEL_LOW;
+}
 
+bool XInputDevice::isConnected() const {
+	return DeviceConnected;
+}
 
-  uint zCXInputDevice::GetBatteryLevel() {
-    XINPUT_BATTERY_INFORMATION batteryInformation;
-    if( !XINPUTGETBATTERYINFORMATION( Opt_ControllerID, BATTERY_DEVTYPE_GAMEPAD, &batteryInformation ) != ERROR_SUCCESS )
-      /*return BATTERY_LEVEL_FAKE*/;
+bool XInputDevice::hasKeysToggled(JOYKEY keys) const
+{
+	for (uint i = 0; i < KeyCombinations.GetNum(); i++)
+	{
+		auto& combo = KeyCombinations[i];
+		if (combo.ToggleMode && combo.Enabled)
+		{
+			auto& comboKeys = combo.Combination;
+			for (uint j = 0; j < comboKeys.GetNum(); j++)
+			{
+				if ((keys & comboKeys[j]) != 0)
+					return true;
+			}
+		}
+	}
 
-    return batteryInformation.BatteryLevel;
-  }
-
-
-
-  bool zCXInputDevice::IsBatteryLow() {
-    return GetBatteryLevel() <= BATTERY_LEVEL_LOW;
-  }
-
-
-
-  bool zCXInputDevice::IsConnected() {
-    return DeviceConnected;
-  }
-
-
-
-  bool zCXInputDevice::HasToggledKeys( JOYKEY& keys ) {
-    for( uint i = 0; i < KeyCombinations.GetNum(); i++ ) {
-
-      auto& combo = KeyCombinations[i];
-      if( combo.ToggleMode && combo.Enabled ) {
-
-        auto& comboKeys = combo.Combination;
-        for( uint j = 0; j < comboKeys.GetNum(); j++ )
-          if( (keys & comboKeys[j]) != 0 )
-            return true;
-      }
-    }
-
-    return false;
-  }
+	return false;
+}
 
 
 
-  bool zCXInputDevice::JoyPressed( const JOYKEY& keys ) {
-    return KeyStatesReal & keys;
-  }
+bool XInputDevice::joyPressed(JOYKEY keys) const {
+	return KeyStatesReal & keys;
+}
 
 
 
-  bool zCXInputDevice::StrafeButtonIsPressed() {
-    return StrafePressed;
-  }
+bool XInputDevice::isStrafeButtonPressed() const {
+	return StrafePressed;
+}
 
 
 
-  bool zCXInputDevice::IsBacKWalk() {
-    return WalkBack;
-  }
+bool XInputDevice::isBackWalk() const {
+	return WalkBack;
+}
 
 
 
-  void zCXInputDevice::GetStickStatesSquare( zTStickState& stateLeft, zTStickState& stateRight ) {
-    stateLeft = LeftStick;
-    stateRight = RightStick;
-  }
+void XInputDevice::getStickStatesSquare(StickState& stateLeft, StickState& stateRight) {
+	stateLeft = LeftStick;
+	stateRight = RightStick;
+}
 
 
 
-  void zCXInputDevice::GetStickStatesCircle( zTStickState& stateLeft, zTStickState& stateRight ) {
-    double squareX = double( LeftStick.X ) / STICK_MAX_D;
-    double squareY = double( LeftStick.Y ) / STICK_MAX_D;
-    stateLeft.X = int( squareX * sqrt( 1.0 - pow( squareY, 2 ) * 0.5 ) * STICK_MAX_D );
-    stateLeft.Y = int( squareY * sqrt( 1.0 - pow( squareX, 2 ) * 0.5 ) * STICK_MAX_D );
+void XInputDevice::getStickStatesCircle(StickState& stateLeft, StickState& stateRight) {
+	double squareX = double(LeftStick.x) / STICK_MAX_D;
+	double squareY = double(LeftStick.y) / STICK_MAX_D;
+	stateLeft.x = int(squareX * sqrt(1.0 - pow(squareY, 2) * 0.5) * STICK_MAX_D);
+	stateLeft.y = int(squareY * sqrt(1.0 - pow(squareX, 2) * 0.5) * STICK_MAX_D);
 
-    squareX = double( RightStick.X ) / STICK_MAX_D;
-    squareY = double( RightStick.Y ) / STICK_MAX_D;
-    stateRight.X = int( squareX * sqrt( 1.0 - pow( squareY, 2 ) * 0.5 ) * STICK_MAX_D );
-    stateRight.Y = int( squareY * sqrt( 1.0 - pow( squareX, 2 ) * 0.5 ) * STICK_MAX_D );
-  }
-
-
-
-  bool zCXInputDevice::HasGamepadInput() {
-    if( KeyStatesReal != 0 )
-      return true;
-
-    if( LeftTrigger != 0 || RightTrigger != 0 )
-      return true;
-
-    int leftStickLength = sqrti( LeftStick.X * LeftStick.X + LeftStick.Y * LeftStick.Y );
-    if( leftStickLength > DEADZONE_L )
-      return true;
-
-    int rightStickLength = sqrti( RightStick.X * RightStick.X + RightStick.Y * RightStick.Y );
-    if( rightStickLength > DEADZONE_R )
-      return true;
-
-    return false;
-  }
+	squareX = double(RightStick.x) / STICK_MAX_D;
+	squareY = double(RightStick.y) / STICK_MAX_D;
+	stateRight.x = int(squareX * sqrt(1.0 - pow(squareY, 2) * 0.5) * STICK_MAX_D);
+	stateRight.y = int(squareY * sqrt(1.0 - pow(squareX, 2) * 0.5) * STICK_MAX_D);
+}
 
 
 
-  zCXInputDevice::~zCXInputDevice() {
-    StartVibration("0");
-    UpdateVibration();
-  }
+bool XInputDevice::hasGamepadInput() const {
+	if (KeyStatesReal != 0)
+		return true;
+
+	if (LeftTrigger != 0 || RightTrigger != 0)
+		return true;
+
+	int leftStickLength = sqrti(LeftStick.x * LeftStick.x + LeftStick.y * LeftStick.y);
+	if (leftStickLength > DEADZONE_L)
+		return true;
+
+	int rightStickLength = sqrti(RightStick.x * RightStick.x + RightStick.y * RightStick.y);
+	if (rightStickLength > DEADZONE_R)
+		return true;
+
+	return false;
+}
+
+
+
+XInputDevice::~XInputDevice() {
+	startVibration("0");
+	UpdateVibration();
+}
 }

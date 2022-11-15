@@ -32,8 +32,8 @@ namespace GOTHIC_ENGINE {
 
     THISCALL( Hook_GetMousePos )(x, y, z);
     float motionFactor = Opt_NoDxMode ? ztimer->frameTimeFloat : 1.0f;
-    x += ((float)XInputDevice.RightStick.X) /  3000.0f * (Opt_StickSensitivity * motionFactor);
-    y += ((float)XInputDevice.RightStick.Y) / -3000.0f * (Opt_StickSensitivity * motionFactor);
+    x += ((float)xinputDevice.RightStick.x) /  3000.0f * (Opt_StickSensitivity * motionFactor);
+    y += ((float)xinputDevice.RightStick.y) / -3000.0f * (Opt_StickSensitivity * motionFactor);
 
     if( rollbackSensitivity < 1.0f ) {
       if( abs( x + y ) > 0.3f ) {
@@ -65,7 +65,7 @@ namespace GOTHIC_ENGINE {
 
   void __fastcall zCCamera_PreRenderProcessing( zCCamera* _this, void* vt ) {
     if( _this->tremorScale >= 0.0001 )
-      XInputDevice.StartVibration( 65535.0f * _this->tremorScale );
+        xinputDevice.startVibration( 65535.0f * _this->tremorScale );
 
     Hook_zCCamera_PreRenderProcessing( _this, vt );
   }
@@ -79,12 +79,12 @@ namespace GOTHIC_ENGINE {
 
     if( this == player ) {
       int value = (int)(65535.0f / (float)attribute[NPC_ATR_HITPOINTSMAX] * desc.fDamageTotal);
-      XInputDevice.StartVibration( max( 65535.0f, value ) );
+      xinputDevice.startVibration( max( 65535.0f, value ) );
     }
 
     if( desc.pNpcAttacker == player ) {
       int value = (int)(16384.0f / (float)attribute[NPC_ATR_HITPOINTSMAX] * desc.fDamageTotal);
-      XInputDevice.StartVibration( max( 16384.0f, value ) );
+      xinputDevice.startVibration( max( 16384.0f, value ) );
     }
   }
 
@@ -96,7 +96,7 @@ namespace GOTHIC_ENGINE {
   HOOK Hook_zCRnd_D3D_BeginFrame PATCH( &zCRnd_D3D::BeginFrame, &zCRnd_D3D_BeginFrame );
 
   void __fastcall zCRnd_D3D_BeginFrame( zCRnd_D3D* _this, void* vtable ) {
-    XInputDevice.UpdateGamePad();
+      xinputDevice.updateDevice();
     Hook_zCRnd_D3D_BeginFrame( _this, vtable );
   }
 
@@ -109,7 +109,7 @@ namespace GOTHIC_ENGINE {
 
   int __fastcall oCBinkPlayer_PlayFrame( zCBinkPlayer* _this, void* vtable ) {
     ActiveVideo = true;
-    XInputDevice.UpdateGamePad();
+    xinputDevice.updateDevice();
     ActiveVideo = false;
     return Hook_oCBinkPlayer_PlayFrame( _this, vtable );
   }
@@ -121,7 +121,7 @@ namespace GOTHIC_ENGINE {
 
   void CGameManager::Init_Union( HWND& hWnd ) {
     THISCALL( Hook_CGameManager_Init )(hWnd);
-    XInputDevice.InitDevice();
+    xinputDevice.init();
   }
 
 
@@ -132,7 +132,7 @@ namespace GOTHIC_ENGINE {
   // void CGameManager::ApplySomeSettings_Union() {
   //   THISCALL( Hook_CGameManager_ApplySomeSettings) ();
   //   ApplyGamepadOptions();
-  //   XInputDevice.UpdateControls();
+  //   xinputDevice.updateControls();
   // }
 
 

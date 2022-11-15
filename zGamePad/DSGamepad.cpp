@@ -25,18 +25,18 @@ void DSDevice::init()
 
 void DSDevice::update()
 {
-	constexpr auto StickScale = 32767.f;
-	constexpr auto TriggerScale = 255.f;
+	constexpr auto StickScale	= 32767.f;
+	constexpr auto TriggerScale	= 255.f;
 
 	gamepadState = JslGetSimpleState(0);
 	if (connected)
 	{
 		keyStates		= gamepadState.buttons;
 		
-		leftStick.X		= int(gamepadState.stickLX * StickScale);
-		leftStick.Y		= int(gamepadState.stickLY * StickScale);
-		rightStick.X	= int(gamepadState.stickRX * StickScale);
-		rightStick.Y	= int(gamepadState.stickRY * StickScale);
+		leftStick.x		= int(gamepadState.stickLX * StickScale);
+		leftStick.y		= int(gamepadState.stickLY * StickScale);
+		rightStick.x	= int(gamepadState.stickRX * StickScale);
+		rightStick.y	= int(gamepadState.stickRY * StickScale);
 		leftTrigger		= gamepadState.lTrigger * StickScale;
 		rightTrigger	= gamepadState.rTrigger * StickScale;
 	}

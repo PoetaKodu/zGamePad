@@ -36,8 +36,8 @@ namespace GOTHIC_ENGINE {
 		uint LastRingID;
 		uint LastCellID;
 		bool NeedToMarkEquipedItems;
-		zTStickState StickStateLeft;
-		zTStickState StickStateRight;
+		StickState StickStateLeft;
+		StickState StickStateRight;
 		zVEC2 MouseState;
 	public:
 		zEGamepadQuickBarAlignment Alignment;

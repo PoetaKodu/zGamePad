@@ -69,7 +69,7 @@ namespace GOTHIC_ENGINE {
 
 
   void zCGamepadControlsHelp::Blit() {
-    if (!Opt_GamepadEnabled || !Opt_HintsEnabled || (!XInputDevice.IsConnected() && !DS4Device.connected))
+    if (!Opt_GamepadEnabled || !Opt_HintsEnabled || (!xinputDevice.isConnected() && !DS4Device.connected))
       return;
 
     int startPosX = 8192;

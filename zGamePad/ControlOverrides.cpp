@@ -42,10 +42,10 @@ namespace GOTHIC_ENGINE {
   static bool ControlFilesFound = InitializeControlsFileArrays( Controls, Overlays );
 
 
-  bool zCXInputDevice::VibrationIsEnabled = true;
+  bool XInputDevice::VibrationIsEnabled = true;
 
 
-  void zCXInputDevice::InitCombinations() {
+  void XInputDevice::InitCombinations() {
     if( !ControlFilesFound ) {
       cmd << "No controls files . . ." << endl;
       return;

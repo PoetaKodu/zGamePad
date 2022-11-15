@@ -29,10 +29,10 @@ namespace GOTHIC_ENGINE {
     delete[] fileTable;
 
     for( uint i = 0; i < namesList.GetNum(); i++ ) {
-      XInputDevice.ParseControlFileStrings( namesList[i] );
+        xinputDevice.ParseControlFileStrings( namesList[i] );
     }
     // for( string fileName : namesList )
-    // XInputDevice.ParseControlFileStrings( fileName );
+    // xinputDevice.ParseControlFileStrings( fileName );
   }
 
   void zTGamepadControlInfo::RegisterStyleInfo( const string& fileName, const string& styleName ) {
@@ -142,7 +142,7 @@ namespace GOTHIC_ENGINE {
   static uint   CurrentCimbinationLine   = 0;
   static uint   CurrentControlsLine      = 0;
 
-  void zCXInputDevice::ParseControlsId( zTCombination& combination, string row ) {
+  void XInputDevice::ParseControlsId( zTCombination& combination, string row ) {
     string id = row.GetWordSmart( 2 );
     combination.Id = string::Combine( "%s.%s", CurrentControlsNamespace, id );
     for( uint i = 0; i < KeyCombinations.GetNum(); i++ )
@@ -152,7 +152,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-  void zCXInputDevice::ParseControlsCombination( zTCombination& combination, string row ) {
+  void XInputDevice::ParseControlsCombination( zTCombination& combination, string row ) {
     for( uint i = 2; true; i++ ) {
       string token = row.GetWordSmart( i );
       if( token.IsEmpty() )
@@ -172,7 +172,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-  void zCXInputDevice::ParseControlsEmulation( zTCombination& combination, string row ) {
+  void XInputDevice::ParseControlsEmulation( zTCombination& combination, string row ) {
     for( uint i = 2; true; i++ ) {
       string token = row.GetWordSmart( i );
       if( token.IsEmpty() )
@@ -192,7 +192,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-  void zCXInputDevice::ParseControlsEndRecord( zTCombination& combination ) {
+  void XInputDevice::ParseControlsEndRecord( zTCombination& combination ) {
     if( combination.Id.IsEmpty() )
       cmd << Col16( CMD_RED | CMD_INT ) << string::Combine( "Found unnamed combination in '%s' file.\nLine:%i", CurrentControlsNamespace, CurrentCimbinationLine ) << Col16() << endl;
       // Message::Fatal( string::Combine( "Found unnamed combination in '%s' file.\nLine:%i", CurrentControlsNamespace, CurrentCimbinationLine ) );
@@ -202,7 +202,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-  void zCXInputDevice::ParseControlsCondition( zTCombination& combination, string row ) {
+  void XInputDevice::ParseControlsCondition( zTCombination& combination, string row ) {
     bool isNot = false;
     for( uint i = 2; true; i++ ) {
       string token = row.GetWordSmart( i );
@@ -264,7 +264,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-  void zCXInputDevice::ParseControlsHelp( zTCombination& combination, string row ) {
+  void XInputDevice::ParseControlsHelp( zTCombination& combination, string row ) {
     string text = row.GetWordSmart( 2 );
     if( text == "\"" )
       text = row.GetPattern( "\"", "\"" );
@@ -276,7 +276,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-  void zCXInputDevice::ParseControlsStringName( string& stringName, string row ) {
+  void XInputDevice::ParseControlsStringName( string& stringName, string row ) {
     string name = row.GetWordSmart( 2 );
     if( name.IsEmpty() )
       Message::Fatal( "Empty string name in Gamepad file." );
@@ -286,7 +286,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-  void zCXInputDevice::ParseControlsStringText( string& stringName, string row ) {
+  void XInputDevice::ParseControlsStringText( string& stringName, string row ) {
     if( stringName.IsEmpty() )
       Message::Fatal( "Empty string name in Gamepad file." );
 
@@ -302,7 +302,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-  void zCXInputDevice::ParseControlsStyleName( const string& fileName, string row ) {
+  void XInputDevice::ParseControlsStyleName( const string& fileName, string row ) {
     string text = row.GetWordSmart( 2 );
     if( text == "\"" )
       text = row.GetPattern( "\"", "\"" );
@@ -322,7 +322,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-  bool zCXInputDevice::ParseControlFile( const string& fileName ) {
+  bool XInputDevice::ParseControlFile( const string& fileName ) {
     bool initialized = false;
     zTCombination combination;
     string currentStringName;
@@ -426,7 +426,7 @@ namespace GOTHIC_ENGINE {
 
 
 
-  bool zCXInputDevice::ParseControlFileStrings( const string& fileName ) {
+  bool XInputDevice::ParseControlFileStrings( const string& fileName ) {
     string currentStringName;
     string controlsFile;
     if( !controlsFile.ReadFromVdf( fileName, VDF_DEFAULT | VDF_PHYSICALFIRST ) ) {

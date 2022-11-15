@@ -207,11 +207,11 @@ namespace GOTHIC_ENGINE {
 
     // Define a stick offset in ring coordinates
     if( Opt_ControllerScheme == 0 )
-      XInputDevice.GetStickStatesCircle( StickStateLeft, StickStateRight );
+        xinputDevice.getStickStatesCircle( StickStateLeft, StickStateRight );
     else
-      XInputDevice.GetStickStatesSquare( StickStateLeft, StickStateRight );
+        xinputDevice.getStickStatesSquare( StickStateLeft, StickStateRight );
 
-    zVEC2 stickVector = zVEC2( (float)StickStateRight.X, (float)StickStateRight.Y );
+    zVEC2 stickVector = zVEC2( (float)StickStateRight.x, (float)StickStateRight.y );
     if( stickVector.Length() < JOY_EPS ) {
 
       // Alternative select method

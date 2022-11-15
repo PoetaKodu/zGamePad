@@ -7,8 +7,8 @@ class DSDevice {
 
 	JOY_SHOCK_STATE		gamepadState;
 	WORD				keyStates;
-	zTStickState		leftStick;
-	zTStickState		rightStick;
+	StickState		leftStick;
+	StickState		rightStick;
 	float				leftTrigger;
 	float				rightTrigger;
 	int					deviceCount;
@@ -23,10 +23,10 @@ public:
 	auto getKeyState() const -> WORD {
 		return keyStates;
 	}
-	auto getLeftStick() const -> zTStickState {
+	auto getLeftStick() const -> StickState {
 		return leftStick;
 	}
-	auto getRightStick() const -> zTStickState {
+	auto getRightStick() const -> StickState {
 		return rightStick;
 	}
 	auto getLeftTrigger() const -> float {
