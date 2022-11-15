@@ -3,6 +3,8 @@
 #ifndef __ZCONTAINER_H__VER3__
 #define __ZCONTAINER_H__VER3__
 
+#include "zGlobal.h"
+
 namespace Gothic_II_Addon {
   const int zARRAY_START_ALLOC = 16;
 

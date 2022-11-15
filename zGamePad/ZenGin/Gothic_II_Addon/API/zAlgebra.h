@@ -584,6 +584,9 @@ namespace Gothic_II_Addon {
     #include "zVEC4.inl"
   };
 
+  zMAT3 Alg_Scaling2D(zVEC2&);
+  zMAT3 Alg_Rotation2D(zVEC2&, float);
+
   class zMAT3 {
   public:
     zVEC3 v[3];
@@ -691,13 +694,12 @@ namespace Gothic_II_Addon {
       );
     }
 
-    friend inline zMAT3 Alg_Scaling2D( zVEC2& );
-    friend inline zMAT3 Alg_Rotation2D( zVEC2&, float );
     zMAT3 ExtractRotation() const {
       float a = v[1][0] * v[1][0];
       float b = v[1][1] * v[1][1];
       float angle = atan( SafeDiv( a, b ) );
-      return Alg_Rotation2D( zVEC2( 0.0f ), angle * DEGREE );
+      auto zeroVec = zVEC2(0.0f);
+      return Alg_Rotation2D( zeroVec, angle * DEGREE );
     }
 
     float ExtractAngle() const {

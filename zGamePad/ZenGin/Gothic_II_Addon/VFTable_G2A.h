@@ -1661,7 +1661,7 @@ namespace Gothic_II_Addon {
   struct vftable_oCViewStatusBar_for_zCViewBase {
     union {
       vfunc array[16];
-      group {
+      struct {
         vfunc f00_anx;               // from zCView           ?anx@zCView@@UAEHH@Z
         vfunc f01_any;               // from zCView           ?any@zCView@@UAEHH@Z
         vfunc f02_nax;               // from zCView           ?nax@zCView@@UAEHH@Z
@@ -1699,7 +1699,7 @@ namespace Gothic_II_Addon {
   struct vftable_zCBinkPlayer {
     union {
       vfunc array[15];
-      group {
+      struct {
         vfunc f00_scalar_destructor; // from base           
         vfunc f01_OpenVideo;         // from zCBinkPlayer   ?OpenVideo@zCBinkPlayer@@UAEHVzSTRING@@@Z
         vfunc f02_CloseVideo;        // from zCBinkPlayer   ?CloseVideo@zCBinkPlayer@@UAEHXZ
@@ -1922,7 +1922,7 @@ namespace Gothic_II_Addon {
   struct vftable_zPATH {
     union {
       vfunc array[1];
-      group {
+      struct {
         vfunc f00_scalar_destructor; // from base  
       } names;
     };

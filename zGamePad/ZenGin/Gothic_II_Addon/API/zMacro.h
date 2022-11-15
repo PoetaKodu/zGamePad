@@ -123,12 +123,12 @@ namespace Gothic_II_Addon {
   // class declaration for gothic api zobject classes
 #define zCLASS_DECLARATION( className )                               \
   static zCClassDef* classDef;                                        \
-  void* className::operator new( size_t size ) {                      \
+  void* operator new( size_t size ) {                      \
     void* mem = ::operator new( size );                               \
   zCClassDef::ObjectCreated( (zCObject*)mem, className::classDef );   \
   return mem;                                                         \
   };                                                                  \
-  void className::operator delete( void* mem ) {                      \
+  void operator delete( void* mem ) {                      \
     zCClassDef::ObjectDeleted( (zCObject*)mem, className::classDef ); \
     ::operator delete( mem );                                         \
   };
@@ -169,10 +169,10 @@ namespace Gothic_II_Addon {
   // COLLISION INTERFACE
   // class declaration for gothic api collision object classes
 #define zCOLLISION_OBJECT_DECLARATION( className )                    \
-    static zCCollisionObjectDef* className::S_GetCollObjClass(void) { \
+    static zCCollisionObjectDef* S_GetCollObjClass(void) { \
       return className::s_oCollObjClass;                              \
     };                                                                \
-    static zCCollisionObjectDef* className::s_oCollObjClass; 
+    static zCCollisionObjectDef* s_oCollObjClass; 
 
 
   // class declaration for union collision object classes

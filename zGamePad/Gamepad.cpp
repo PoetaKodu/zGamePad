@@ -631,8 +631,11 @@ namespace GOTHIC_ENGINE {
       KeyStates = Gamepad.Gamepad.wButtons;
 
       if( (KeyStates & JOY_LSTICK) && (KeyStates & JOY_RSTICK) ) {
-        if( helper[0u].Await( 2000 ) )
-          player->EmergencyResetPos( player->GetPositionWorld() );
+          if (helper[0u].Await(2000))
+          {
+              auto pos = player->GetPositionWorld();
+              player->EmergencyResetPos(pos);
+          }
       }
       else
         helper[0u].Delete();

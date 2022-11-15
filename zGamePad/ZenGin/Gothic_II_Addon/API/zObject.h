@@ -77,17 +77,7 @@ namespace Gothic_II_Addon {
   };
 
   template<class T>
-  T* zDYNAMIC_CAST( zCObject const* pObject )
-  {
-    if( !pObject ) {
-      return Null;
-    }
-    zCClassDef* pDef = pObject->_GetClassDef();
-    if( zCObject::CheckInheritance( T::classDef, pDef )) {
-      return (T*)pObject;
-    }
-    return dynamic_cast<T*>( (zCObject*)pObject );
-  }
+  T* zDYNAMIC_CAST(zCObject const* pObject);
 
   class zCObject {
     friend zCClassDef;
@@ -154,6 +144,19 @@ namespace Gothic_II_Addon {
     // user API
     #include "zCObjectFactory.inl"
   };
+
+  template<class T>
+  T* zDYNAMIC_CAST(zCObject const* pObject)
+  {
+      if (!pObject) {
+          return Null;
+      }
+      zCClassDef* pDef = pObject->_GetClassDef();
+      if (zCObject::CheckInheritance(T::classDef, pDef)) {
+          return (T*)pObject;
+      }
+      return dynamic_cast<T*>((zCObject*)pObject);
+  }
 
   
 } // namespace Gothic_II_Addon

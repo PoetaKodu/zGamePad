@@ -24,9 +24,9 @@ int IsDead_Union() { return attribute[NPC_ATR_HITPOINTS] <= 0; }
 void TurnToEnemyInAttack();
 Array<oCNpc*> GetNearestFightNpcList();
 Array<oCNpc*> GetNearestVisibleFightNpcList();
-oCNpc* oCNpc::GetNearestFightNpcRight_Union();
-oCNpc* oCNpc::GetNearestFightNpcLeft_Union();
-oCNpc* oCNpc::GetNearestFightNpc_Union();
+oCNpc* GetNearestFightNpcRight_Union();
+oCNpc* GetNearestFightNpcLeft_Union();
+oCNpc* GetNearestFightNpc_Union();
 int CanInterruptAttack();
 int EV_DrawWeapon_Union( oCMsgWeapon* );
 

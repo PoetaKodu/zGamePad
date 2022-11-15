@@ -104,19 +104,19 @@ namespace Gothic_II_Addon {
     }
 
     Data *operator[] ( const zCSparseArrayIterator& iterator ) const {
-      return (Data *)DataPtr( iterator.T() );
+      return (Data *)DataPtr( iterator.operator T() );
     }
 
     Data *IteratorData( const zCSparseArrayIterator& iterator ) const {
-      return (Data *)DataPtr( iterator.T() );
+      return (Data *)DataPtr( iterator.operator T() );
     }
 
     T *IteratorIndex( const zCSparseArrayIterator& iterator ) const {
-      return (T *)IndexPtr( iterator.T() );
+      return (T *)IndexPtr( iterator.operator T() );
     }
 
     void Delete( const zCSparseArrayIterator& iterator ) {
-      Delete( *(T *)IndexPtr( iterator.T() ) );
+      Delete( *(T *)IndexPtr( iterator.operator T() ) );
     }
 
     virtual unsigned long SizeIndex() const {

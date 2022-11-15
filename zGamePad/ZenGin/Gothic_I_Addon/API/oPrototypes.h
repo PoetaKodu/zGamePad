@@ -148,16 +148,16 @@ namespace Gothic_I_Addon {
   class oCWay;
   class oCWorld;
   class oCWorldTimer;
-  enum oTMenuSavegameMode;
-  enum oTMenuAttrib;
-  enum oTMenuArmor;
-  enum oTEnumNpcTalent;
-  enum oEBloodMode;
-  enum oEInventoryAlignment;
-  enum oEItemContainerAlignment;
-  enum oEStealContainerAlignment;
-  enum oTGameDialogView;
-  enum oEDescDamageFlags;
+  enum oTMenuSavegameMode : int;
+  enum oTMenuAttrib : int;
+  enum oTMenuArmor : int;
+  enum oTEnumNpcTalent : int;
+  enum oEBloodMode : int;
+  enum oEInventoryAlignment : int;
+  enum oEItemContainerAlignment : int;
+  enum oEStealContainerAlignment : int;
+  enum oTGameDialogView : int;
+  enum oEDescDamageFlags : int;
 } // namespace Gothic_II_Addon
 
 #endif // __OPROTOTYPES_H__VER1__

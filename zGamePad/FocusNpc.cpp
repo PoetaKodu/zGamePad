@@ -321,8 +321,11 @@ namespace GOTHIC_ENGINE {
       human_ai->IsStateAniActive( human_ai->_t_hitr ) ||
       human_ai->IsStateAniActive( human_ai->_t_hitf );
 
-    if( isFightAni && focus_vob )
-      Turn( focus_vob->GetPositionWorld() );
+    if (isFightAni && focus_vob)
+    {
+        auto pos = focus_vob->GetPositionWorld();
+        Turn(pos);
+    }
   }
 
 
